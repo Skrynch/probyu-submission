@@ -15,6 +15,34 @@
       "when": 1789322819943,
       "tag": "0001_wandering_ink",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789382400000,
+      "tag": "0002_family_consent",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789382964320,
+      "tag": "0003_family_access_integrity",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789386554692,
+      "tag": "0004_fixed_blizzard",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1789389491467,
+      "tag": "0005_goofy_wild_pack",
+      "breakpoints": true
     }
   ]
 }

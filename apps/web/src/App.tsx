@@ -1,3 +1,4 @@
+import { FamilyFlow } from './features/family/FamilyFlow';
 import { Navigate, Route, Routes, useParams } from 'react-router-dom';
 
 import { DemoFlowRoute } from './features/demo/DemoFlow';
@@ -12,6 +13,7 @@ function DemoEntryRedirect() {
 export function App() {
   return (
     <Routes>
+      <Route path="/family" element={<FamilyFlow />} />
       <Route path="/" element={<DemoStart />} />
       <Route path="/demo/:scenarioId" element={<DemoEntryRedirect />} />
       <Route path="/demo/:scenarioId/:step" element={<DemoFlowRoute />} />

@@ -2,7 +2,7 @@
 
 import { client } from './client.gen.js';
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client/index.js';
-import type { GetDemoScenarioData, GetDemoScenarioErrors, GetDemoScenarioResponses, GetHealthData, GetHealthResponses, ListDemoScenariosData, ListDemoScenariosResponses } from './types.gen.js';
+import type { BootstrapFamilyData, BootstrapFamilyErrors, BootstrapFamilyResponses, ChallengeFamilyLoginData, ChallengeFamilyLoginErrors, ChallengeFamilyLoginResponses, ChallengeFamilyReauthData, ChallengeFamilyReauthErrors, ChallengeFamilyReauthResponses, ExecuteFamilyCommandData, ExecuteFamilyCommandErrors, ExecuteFamilyCommandResponses, GetDemoScenarioData, GetDemoScenarioErrors, GetDemoScenarioResponses, GetFamilyDocumentsData, GetFamilyDocumentsErrors, GetFamilyDocumentsResponses, GetFamilySessionData, GetFamilySessionErrors, GetFamilySessionResponses, GetHealthData, GetHealthResponses, ListDemoScenariosData, ListDemoScenariosResponses, LoginFamilyData, LoginFamilyErrors, LoginFamilyResponses, LogoutFamilyData, LogoutFamilyErrors, LogoutFamilyResponses, VerifyFamilyReauthData, VerifyFamilyReauthErrors, VerifyFamilyReauthResponses } from './types.gen.js';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -32,3 +32,150 @@ export const listDemoScenarios = <ThrowOnError extends boolean = false>(options?
  * Return one versioned fixed demo scenario
  */
 export const getDemoScenario = <ThrowOnError extends boolean = false>(options: Options<GetDemoScenarioData, ThrowOnError>): RequestResult<GetDemoScenarioResponses, GetDemoScenarioErrors, ThrowOnError> => (options.client ?? client).get<GetDemoScenarioResponses, GetDemoScenarioErrors, ThrowOnError>({ url: '/v1/demo/scenarios/{scenarioId}', ...options });
+
+/**
+ * Synthetic M2 bootstrapFamily
+ *
+ * Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+ */
+export const bootstrapFamily = <ThrowOnError extends boolean = false>(options: Options<BootstrapFamilyData, ThrowOnError>): RequestResult<BootstrapFamilyResponses, BootstrapFamilyErrors, ThrowOnError> => (options.client ?? client).post<BootstrapFamilyResponses, BootstrapFamilyErrors, ThrowOnError>({
+    security: [{ name: 'Origin', type: 'apiKey' }],
+    url: '/v1/family/bootstrap',
+    ...options
+});
+
+/**
+ * Synthetic M2 getFamilySession
+ */
+export const getFamilySession = <ThrowOnError extends boolean = false>(options?: Options<GetFamilySessionData, ThrowOnError>): RequestResult<GetFamilySessionResponses, GetFamilySessionErrors, ThrowOnError> => (options?.client ?? client).get<GetFamilySessionResponses, GetFamilySessionErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-probuyu_session',
+            type: 'apiKey'
+        }],
+    url: '/v1/family/session',
+    ...options
+});
+
+/**
+ * Synthetic M2 getFamilyDocuments
+ */
+export const getFamilyDocuments = <ThrowOnError extends boolean = false>(options?: Options<GetFamilyDocumentsData, ThrowOnError>): RequestResult<GetFamilyDocumentsResponses, GetFamilyDocumentsErrors, ThrowOnError> => (options?.client ?? client).get<GetFamilyDocumentsResponses, GetFamilyDocumentsErrors, ThrowOnError>({
+    security: [{
+            in: 'cookie',
+            name: '__Host-probuyu_session',
+            type: 'apiKey'
+        }],
+    url: '/v1/family/documents',
+    ...options
+});
+
+/**
+ * Synthetic M2 challengeFamilyLogin
+ *
+ * Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+ */
+export const challengeFamilyLogin = <ThrowOnError extends boolean = false>(options: Options<ChallengeFamilyLoginData, ThrowOnError>): RequestResult<ChallengeFamilyLoginResponses, ChallengeFamilyLoginErrors, ThrowOnError> => (options.client ?? client).post<ChallengeFamilyLoginResponses, ChallengeFamilyLoginErrors, ThrowOnError>({
+    security: [{ name: 'Origin', type: 'apiKey' }, {
+            in: 'cookie',
+            name: '__Host-probuyu_session',
+            type: 'apiKey'
+        }],
+    url: '/v1/family/login/challenge',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Synthetic M2 loginFamily
+ *
+ * Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+ */
+export const loginFamily = <ThrowOnError extends boolean = false>(options: Options<LoginFamilyData, ThrowOnError>): RequestResult<LoginFamilyResponses, LoginFamilyErrors, ThrowOnError> => (options.client ?? client).post<LoginFamilyResponses, LoginFamilyErrors, ThrowOnError>({
+    security: [{ name: 'Origin', type: 'apiKey' }, {
+            in: 'cookie',
+            name: '__Host-probuyu_session',
+            type: 'apiKey'
+        }],
+    url: '/v1/family/login',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Synthetic M2 challengeFamilyReauth
+ *
+ * Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+ */
+export const challengeFamilyReauth = <ThrowOnError extends boolean = false>(options: Options<ChallengeFamilyReauthData, ThrowOnError>): RequestResult<ChallengeFamilyReauthResponses, ChallengeFamilyReauthErrors, ThrowOnError> => (options.client ?? client).post<ChallengeFamilyReauthResponses, ChallengeFamilyReauthErrors, ThrowOnError>({
+    security: [{ name: 'Origin', type: 'apiKey' }, {
+            in: 'cookie',
+            name: '__Host-probuyu_session',
+            type: 'apiKey'
+        }],
+    url: '/v1/family/reauth/challenge',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Synthetic M2 verifyFamilyReauth
+ *
+ * Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+ */
+export const verifyFamilyReauth = <ThrowOnError extends boolean = false>(options: Options<VerifyFamilyReauthData, ThrowOnError>): RequestResult<VerifyFamilyReauthResponses, VerifyFamilyReauthErrors, ThrowOnError> => (options.client ?? client).post<VerifyFamilyReauthResponses, VerifyFamilyReauthErrors, ThrowOnError>({
+    security: [{ name: 'Origin', type: 'apiKey' }, {
+            in: 'cookie',
+            name: '__Host-probuyu_session',
+            type: 'apiKey'
+        }],
+    url: '/v1/family/reauth',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Synthetic M2 executeFamilyCommand
+ *
+ * Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+ */
+export const executeFamilyCommand = <ThrowOnError extends boolean = false>(options: Options<ExecuteFamilyCommandData, ThrowOnError>): RequestResult<ExecuteFamilyCommandResponses, ExecuteFamilyCommandErrors, ThrowOnError> => (options.client ?? client).post<ExecuteFamilyCommandResponses, ExecuteFamilyCommandErrors, ThrowOnError>({
+    security: [{ name: 'Origin', type: 'apiKey' }, {
+            in: 'cookie',
+            name: '__Host-probuyu_session',
+            type: 'apiKey'
+        }],
+    url: '/v1/family/commands',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Synthetic M2 logoutFamily
+ *
+ * Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+ */
+export const logoutFamily = <ThrowOnError extends boolean = false>(options: Options<LogoutFamilyData, ThrowOnError>): RequestResult<LogoutFamilyResponses, LogoutFamilyErrors, ThrowOnError> => (options.client ?? client).post<LogoutFamilyResponses, LogoutFamilyErrors, ThrowOnError>({
+    security: [{ name: 'Origin', type: 'apiKey' }, {
+            in: 'cookie',
+            name: '__Host-probuyu_session',
+            type: 'apiKey'
+        }],
+    url: '/v1/family/logout',
+    ...options
+});

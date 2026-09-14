@@ -5,6 +5,7 @@ const config = readConfig();
 const app = await buildApp({
   ...(config.databaseUrl === undefined ? {} : { databaseUrl: config.databaseUrl }),
   logger: true,
+  ...(config.family ? { family: config.family } : {}),
 });
 
 const stop = async () => {

@@ -8,5 +8,11 @@
     "types": ["node"],
     "lib": ["ES2023", "DOM", "DOM.Iterable"]
   },
-  "include": ["vite.config.ts", "playwright.config.ts", "e2e"]
+  "include": [
+    "vite.config.ts",
+    "playwright.config.ts",
+    "playwright.m2.config.ts",
+    "e2e",
+    "../../services/backend/src/db/family-test-support.ts"
+  ]
 }

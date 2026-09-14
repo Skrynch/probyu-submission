@@ -305,3 +305,431 @@ export const ErrorResponseSchema = {
         }
     }
 } as const;
+
+export const FamilyActionSchema = {
+    oneOf: [
+        {
+            type: 'object',
+            additionalProperties: false,
+            required: [
+                'kind',
+                'documentVersion',
+                'ageBand',
+                'text',
+                'history'
+            ],
+            properties: {
+                kind: {
+                    type: 'string',
+                    const: 'ACTIVATE'
+                },
+                documentVersion: {
+                    type: 'string'
+                },
+                ageBand: {
+                    type: 'string',
+                    enum: [
+                        '8_10',
+                        '11_12',
+                        '13_14'
+                    ]
+                },
+                text: {
+                    type: 'boolean'
+                },
+                history: {
+                    type: 'boolean'
+                }
+            }
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            required: [
+                'kind',
+                'childId',
+                'documentVersion',
+                'purpose',
+                'granted'
+            ],
+            properties: {
+                kind: {
+                    type: 'string',
+                    const: 'CONSENT'
+                },
+                childId: {
+                    type: 'string',
+                    format: 'uuid'
+                },
+                documentVersion: {
+                    type: 'string'
+                },
+                purpose: {
+                    type: 'string',
+                    enum: [
+                        'TEXT',
+                        'HISTORY'
+                    ]
+                },
+                granted: {
+                    type: 'boolean'
+                }
+            }
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            required: [
+                'kind',
+                'childId'
+            ],
+            properties: {
+                kind: {
+                    type: 'string',
+                    const: 'HANDOFF'
+                },
+                childId: {
+                    type: 'string',
+                    format: 'uuid'
+                }
+            }
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            required: [
+                'kind'
+            ],
+            properties: {
+                kind: {
+                    type: 'string',
+                    const: 'RETURN'
+                }
+            }
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            required: [
+                'kind',
+                'childId'
+            ],
+            properties: {
+                kind: {
+                    type: 'string',
+                    const: 'PAUSE'
+                },
+                childId: {
+                    type: 'string',
+                    format: 'uuid'
+                }
+            }
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            required: [
+                'kind',
+                'childId'
+            ],
+            properties: {
+                kind: {
+                    type: 'string',
+                    const: 'RESUME'
+                },
+                childId: {
+                    type: 'string',
+                    format: 'uuid'
+                }
+            }
+        },
+        {
+            type: 'object',
+            additionalProperties: false,
+            required: [
+                'kind'
+            ],
+            properties: {
+                kind: {
+                    type: 'string',
+                    const: 'REVOKE_BROWSER'
+                }
+            }
+        }
+    ]
+} as const;
+
+export const FamilyChildSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
+        nickname: {
+            type: 'string'
+        },
+        ageBand: {
+            type: 'string',
+            enum: [
+                '8_10',
+                '11_12',
+                '13_14'
+            ]
+        },
+        status: {
+            type: 'string',
+            enum: [
+                'ACTIVE',
+                'PAUSED'
+            ]
+        },
+        textAllowed: {
+            type: 'boolean'
+        },
+        historyAllowed: {
+            type: 'boolean'
+        },
+        textGranted: {
+            type: 'boolean'
+        },
+        historyGranted: {
+            type: 'boolean'
+        },
+        textExpiresAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        historyExpiresAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    },
+    required: [
+        'id',
+        'nickname',
+        'ageBand',
+        'status',
+        'textAllowed',
+        'historyAllowed'
+    ]
+} as const;
+
+export const FamilySessionSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        mode: {
+            type: 'string',
+            enum: [
+                'ANONYMOUS',
+                'PARENT',
+                'CHILD',
+                'LOCKED'
+            ]
+        },
+        csrfToken: {
+            type: 'string'
+        },
+        synthetic: {
+            type: 'boolean',
+            const: true
+        },
+        familyId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        child: {
+            $ref: '#/components/schemas/FamilyChild'
+        }
+    },
+    required: [
+        'mode',
+        'csrfToken',
+        'synthetic'
+    ]
+} as const;
+
+export const FamilyDocumentsSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        version: {
+            type: 'string'
+        },
+        text: {
+            type: 'string'
+        },
+        history: {
+            type: 'string'
+        },
+        synthetic: {
+            type: 'boolean',
+            const: true
+        }
+    },
+    required: [
+        'version',
+        'text',
+        'history',
+        'synthetic'
+    ]
+} as const;
+
+export const FamilyChallengeSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        challengeId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        devCode: {
+            type: 'string',
+            pattern: '^[0-9]{6}$'
+        },
+        synthetic: {
+            type: 'boolean',
+            const: true
+        }
+    },
+    required: [
+        'challengeId',
+        'devCode',
+        'synthetic'
+    ]
+} as const;
+
+export const FamilyLoginRequestSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        identity: {
+            type: 'string',
+            enum: [
+                'aurora',
+                'comet'
+            ]
+        }
+    },
+    required: [
+        'identity'
+    ]
+} as const;
+
+export const FamilyProofRequestSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        challengeId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        code: {
+            type: 'string',
+            pattern: '^[0-9]{6}$'
+        }
+    },
+    required: [
+        'challengeId',
+        'code'
+    ]
+} as const;
+
+export const FamilyReauthRequestSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        action: {
+            $ref: '#/components/schemas/FamilyAction'
+        }
+    },
+    required: [
+        'action'
+    ]
+} as const;
+
+export const FamilyReauthResponseSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        receiptId: {
+            type: 'string',
+            format: 'uuid'
+        }
+    },
+    required: [
+        'receiptId'
+    ]
+} as const;
+
+export const FamilyCommandSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        action: {
+            $ref: '#/components/schemas/FamilyAction'
+        },
+        receiptId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        idempotencyKey: {
+            type: 'string',
+            format: 'uuid'
+        }
+    },
+    required: [
+        'action',
+        'receiptId',
+        'idempotencyKey'
+    ]
+} as const;
+
+export const FamilyResultSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        ok: {
+            type: 'boolean',
+            const: true
+        }
+    },
+    required: [
+        'ok'
+    ]
+} as const;
+
+export const FamilyErrorSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        code: {
+            type: 'string',
+            enum: [
+                'UNAUTHENTICATED',
+                'FORBIDDEN',
+                'INVALID_REQUEST',
+                'CONFLICT',
+                'EXPIRED_PROOF',
+                'INVALID_CODE',
+                'RATE_LIMITED',
+                'UNAVAILABLE'
+            ]
+        },
+        remainingAttempts: {
+            type: 'integer',
+            minimum: 0,
+            maximum: 4
+        },
+        retryAfterSeconds: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 900
+        }
+    },
+    required: [
+        'code'
+    ]
+} as const;

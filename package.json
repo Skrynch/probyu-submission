@@ -28,7 +28,11 @@
     "test:e2e": "pnpm --filter @probyu/web test:e2e",
     "test:integration": "pnpm --filter @probyu/backend test:integration",
     "typecheck": "tsc --noEmit -p tsconfig.json && pnpm -r --if-present typecheck",
-    "verify": "pnpm contract:check && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build"
+    "verify": "pnpm contract:check && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
+    "db:m2:prepare": "pnpm --filter @probyu/backend exec tsx src/db/family-prepare.ts",
+    "test:m2": "pnpm --filter @probyu/backend exec vitest run src/db/family.integration.test.ts",
+    "test:e2e:m2": "pnpm --filter @probyu/web exec playwright test --config playwright.m2.config.ts",
+    "dev:m2": "tsx scripts/dev-m2.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

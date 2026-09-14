@@ -1,3 +1,4 @@
+export * from './family-schema.js';
 import { check, integer, jsonb, pgSchema, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 

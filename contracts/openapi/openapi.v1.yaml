@@ -2,18 +2,20 @@ openapi: 3.1.0
 info:
   title: Probyu API
   version: 0.1.0
-  description: Public fixed-demo and operational endpoints for the M1 foundation.
+  description: Public fixed demo and explicitly gated synthetic family access.
 servers:
   - url: /
     description: Same-origin API
 tags:
   - name: system
   - name: demo
+  - name: family
 paths:
   /v1/health:
     get:
       operationId: getHealth
-      tags: [system]
+      tags:
+        - system
       summary: Return API liveness without exposing environment details
       responses:
         '200':
@@ -25,7 +27,8 @@ paths:
   /v1/demo/scenarios:
     get:
       operationId: listDemoScenarios
-      tags: [demo]
+      tags:
+        - demo
       summary: List published fixed demo scenarios
       responses:
         '200':
@@ -37,7 +40,8 @@ paths:
   /v1/demo/scenarios/{scenarioId}:
     get:
       operationId: getDemoScenario
-      tags: [demo]
+      tags:
+        - demo
       summary: Return one versioned fixed demo scenario
       parameters:
         - name: scenarioId
@@ -45,32 +49,572 @@ paths:
           required: true
           schema:
             type: string
-            pattern: '^[a-z0-9-]{1,64}$'
+            pattern: ^[a-z0-9-]{1,64}$
       responses:
-        '400':
-          description: Scenario identifier is invalid
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
         '200':
           description: Safe public scenario
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/DemoScenario'
+        '400':
+          description: Scenario identifier is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
         '404':
           description: Scenario was not found
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
+  /v1/family/bootstrap:
+    post:
+      operationId: bootstrapFamily
+      tags:
+        - family
+      summary: Synthetic M2 bootstrapFamily
+      description: Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+      security:
+        - sameOrigin: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilySession'
+        '400':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '401':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '403':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '409':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '429':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '503':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+      parameters:
+        - name: X-Probyu-Bootstrap
+          in: header
+          required: true
+          schema: &a1
+            type: string
+  /v1/family/session:
+    get:
+      operationId: getFamilySession
+      tags:
+        - family
+      summary: Synthetic M2 getFamilySession
+      security:
+        - familySession: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilySession'
+        '400':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '401':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '403':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '409':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '429':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '503':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+  /v1/family/documents:
+    get:
+      operationId: getFamilyDocuments
+      tags:
+        - family
+      summary: Synthetic M2 getFamilyDocuments
+      security:
+        - familySession: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyDocuments'
+        '400':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '401':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '403':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '409':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '429':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '503':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+  /v1/family/login/challenge:
+    post:
+      operationId: challengeFamilyLogin
+      tags:
+        - family
+      summary: Synthetic M2 challengeFamilyLogin
+      description: Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+      security:
+        - sameOrigin: []
+          familySession: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyChallenge'
+        '400':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '401':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '403':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '409':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '429':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '503':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyLoginRequest'
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema: *a1
+  /v1/family/login:
+    post:
+      operationId: loginFamily
+      tags:
+        - family
+      summary: Synthetic M2 loginFamily
+      description: Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+      security:
+        - sameOrigin: []
+          familySession: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilySession'
+        '400':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '401':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '403':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '409':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '429':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '503':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyProofRequest'
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema: *a1
+  /v1/family/reauth/challenge:
+    post:
+      operationId: challengeFamilyReauth
+      tags:
+        - family
+      summary: Synthetic M2 challengeFamilyReauth
+      description: Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+      security:
+        - sameOrigin: []
+          familySession: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyChallenge'
+        '400':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '401':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '403':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '409':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '429':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '503':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyReauthRequest'
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema: *a1
+  /v1/family/reauth:
+    post:
+      operationId: verifyFamilyReauth
+      tags:
+        - family
+      summary: Synthetic M2 verifyFamilyReauth
+      description: Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+      security:
+        - sameOrigin: []
+          familySession: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyReauthResponse'
+        '400':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '401':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '403':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '409':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '429':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '503':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyProofRequest'
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema: *a1
+  /v1/family/commands:
+    post:
+      operationId: executeFamilyCommand
+      tags:
+        - family
+      summary: Synthetic M2 executeFamilyCommand
+      description: Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+      security:
+        - sameOrigin: []
+          familySession: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyResult'
+        '400':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '401':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '403':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '409':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '429':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '503':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FamilyCommand'
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema: *a1
+  /v1/family/logout:
+    post:
+      operationId: logoutFamily
+      tags:
+        - family
+      summary: Synthetic M2 logoutFamily
+      description: Exact Origin is required and checked server-side. Browser Fetch supplies it automatically; non-browser callers must supply it explicitly.
+      security:
+        - sameOrigin: []
+          familySession: []
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyResult'
+        '400':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '401':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '403':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '409':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '429':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+        '503':
+          description: Safe failure
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FamilyError'
+      parameters:
+        - name: X-CSRF-Token
+          in: header
+          required: true
+          schema: *a1
 components:
   schemas:
     HealthResponse:
       type: object
       additionalProperties: false
-      required: [status, service]
+      required:
+        - status
+        - service
       properties:
         status:
           type: string
@@ -81,7 +625,15 @@ components:
     DemoScenarioSummary:
       type: object
       additionalProperties: false
-      required: [id, version, kind, title, question, ageBand, durationMinutes, contentHash]
+      required:
+        - id
+        - version
+        - kind
+        - title
+        - question
+        - ageBand
+        - durationMinutes
+        - contentHash
       properties:
         id:
           type: string
@@ -103,11 +655,12 @@ components:
           maximum: 30
         contentHash:
           type: string
-          pattern: '^[a-f0-9]{64}$'
+          pattern: ^[a-f0-9]{64}$
     DemoScenarioList:
       type: object
       additionalProperties: false
-      required: [items]
+      required:
+        - items
       properties:
         items:
           type: array
@@ -153,7 +706,7 @@ components:
           maximum: 30
         contentHash:
           type: string
-          pattern: '^[a-f0-9]{64}$'
+          pattern: ^[a-f0-9]{64}$
         explanation:
           type: array
           minItems: 1
@@ -177,7 +730,12 @@ components:
     DemoProbe:
       type: object
       additionalProperties: false
-      required: [goal, durationMinutes, materials, steps, safetyNotes]
+      required:
+        - goal
+        - durationMinutes
+        - materials
+        - steps
+        - safetyNotes
       properties:
         goal:
           type: string
@@ -206,7 +764,10 @@ components:
     DemoResultOption:
       type: object
       additionalProperties: false
-      required: [id, label, feedback]
+      required:
+        - id
+        - label
+        - feedback
       properties:
         id:
           type: string
@@ -217,7 +778,9 @@ components:
     DemoReflection:
       type: object
       additionalProperties: false
-      required: [prompt, options]
+      required:
+        - prompt
+        - options
       properties:
         prompt:
           type: string
@@ -230,7 +793,9 @@ components:
     DemoObservation:
       type: object
       additionalProperties: false
-      required: [label, limits]
+      required:
+        - label
+        - limits
       properties:
         label:
           type: string
@@ -239,7 +804,10 @@ components:
     DemoCompletion:
       type: object
       additionalProperties: false
-      required: [title, body, cta]
+      required:
+        - title
+        - body
+        - cta
       properties:
         title:
           type: string
@@ -250,9 +818,288 @@ components:
     ErrorResponse:
       type: object
       additionalProperties: false
-      required: [code, message]
+      required:
+        - code
+        - message
       properties:
         code:
           type: string
         message:
           type: string
+    FamilyAction:
+      oneOf:
+        - type: object
+          additionalProperties: false
+          required:
+            - kind
+            - documentVersion
+            - ageBand
+            - text
+            - history
+          properties:
+            kind:
+              type: string
+              const: ACTIVATE
+            documentVersion: *a1
+            ageBand:
+              type: string
+              enum:
+                - 8_10
+                - 11_12
+                - 13_14
+            text:
+              type: boolean
+            history:
+              type: boolean
+        - type: object
+          additionalProperties: false
+          required:
+            - kind
+            - childId
+            - documentVersion
+            - purpose
+            - granted
+          properties:
+            kind:
+              type: string
+              const: CONSENT
+            childId: &a2
+              type: string
+              format: uuid
+            documentVersion: *a1
+            purpose:
+              type: string
+              enum:
+                - TEXT
+                - HISTORY
+            granted:
+              type: boolean
+        - type: object
+          additionalProperties: false
+          required:
+            - kind
+            - childId
+          properties:
+            kind:
+              type: string
+              const: HANDOFF
+            childId: *a2
+        - type: object
+          additionalProperties: false
+          required:
+            - kind
+          properties:
+            kind:
+              type: string
+              const: RETURN
+        - type: object
+          additionalProperties: false
+          required:
+            - kind
+            - childId
+          properties:
+            kind:
+              type: string
+              const: PAUSE
+            childId: *a2
+        - type: object
+          additionalProperties: false
+          required:
+            - kind
+            - childId
+          properties:
+            kind:
+              type: string
+              const: RESUME
+            childId: *a2
+        - type: object
+          additionalProperties: false
+          required:
+            - kind
+          properties:
+            kind:
+              type: string
+              const: REVOKE_BROWSER
+    FamilyChild:
+      type: object
+      additionalProperties: false
+      properties:
+        id: *a2
+        nickname: *a1
+        ageBand:
+          type: string
+          enum:
+            - 8_10
+            - 11_12
+            - 13_14
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - PAUSED
+        textAllowed:
+          type: boolean
+        historyAllowed:
+          type: boolean
+        textGranted:
+          type: boolean
+        historyGranted:
+          type: boolean
+        textExpiresAt:
+          type: string
+          format: date-time
+        historyExpiresAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - nickname
+        - ageBand
+        - status
+        - textAllowed
+        - historyAllowed
+    FamilySession:
+      type: object
+      additionalProperties: false
+      properties:
+        mode:
+          type: string
+          enum:
+            - ANONYMOUS
+            - PARENT
+            - CHILD
+            - LOCKED
+        csrfToken: *a1
+        synthetic:
+          type: boolean
+          const: true
+        familyId: *a2
+        child:
+          $ref: '#/components/schemas/FamilyChild'
+      required:
+        - mode
+        - csrfToken
+        - synthetic
+    FamilyDocuments:
+      type: object
+      additionalProperties: false
+      properties:
+        version: *a1
+        text: *a1
+        history: *a1
+        synthetic:
+          type: boolean
+          const: true
+      required:
+        - version
+        - text
+        - history
+        - synthetic
+    FamilyChallenge:
+      type: object
+      additionalProperties: false
+      properties:
+        challengeId: *a2
+        devCode:
+          type: string
+          pattern: ^[0-9]{6}$
+        synthetic:
+          type: boolean
+          const: true
+      required:
+        - challengeId
+        - devCode
+        - synthetic
+    FamilyLoginRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        identity:
+          type: string
+          enum:
+            - aurora
+            - comet
+      required:
+        - identity
+    FamilyProofRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        challengeId: *a2
+        code:
+          type: string
+          pattern: ^[0-9]{6}$
+      required:
+        - challengeId
+        - code
+    FamilyReauthRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          $ref: '#/components/schemas/FamilyAction'
+      required:
+        - action
+    FamilyReauthResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        receiptId: *a2
+      required:
+        - receiptId
+    FamilyCommand:
+      type: object
+      additionalProperties: false
+      properties:
+        action:
+          $ref: '#/components/schemas/FamilyAction'
+        receiptId: *a2
+        idempotencyKey: *a2
+      required:
+        - action
+        - receiptId
+        - idempotencyKey
+    FamilyResult:
+      type: object
+      additionalProperties: false
+      properties:
+        ok:
+          type: boolean
+          const: true
+      required:
+        - ok
+    FamilyError:
+      type: object
+      additionalProperties: false
+      properties:
+        code:
+          type: string
+          enum:
+            - UNAUTHENTICATED
+            - FORBIDDEN
+            - INVALID_REQUEST
+            - CONFLICT
+            - EXPIRED_PROOF
+            - INVALID_CODE
+            - RATE_LIMITED
+            - UNAVAILABLE
+        remainingAttempts:
+          type: integer
+          minimum: 0
+          maximum: 4
+        retryAfterSeconds:
+          type: integer
+          minimum: 1
+          maximum: 900
+      required:
+        - code
+  securitySchemes:
+    sameOrigin:
+      type: apiKey
+      in: header
+      name: Origin
+      description: Browser-managed CSRF origin check; not an identity credential. Must equal the configured application origin.
+    familySession:
+      type: apiKey
+      in: cookie
+      name: __Host-probuyu_session

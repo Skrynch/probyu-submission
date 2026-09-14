@@ -76,6 +76,100 @@ export type ErrorResponse = {
     message: string;
 };
 
+export type FamilyAction = {
+    kind: 'ACTIVATE';
+    documentVersion: string;
+    ageBand: '8_10' | '11_12' | '13_14';
+    text: boolean;
+    history: boolean;
+} | {
+    kind: 'CONSENT';
+    childId: string;
+    documentVersion: string;
+    purpose: 'TEXT' | 'HISTORY';
+    granted: boolean;
+} | {
+    kind: 'HANDOFF';
+    childId: string;
+} | {
+    kind: 'RETURN';
+} | {
+    kind: 'PAUSE';
+    childId: string;
+} | {
+    kind: 'RESUME';
+    childId: string;
+} | {
+    kind: 'REVOKE_BROWSER';
+};
+
+export type FamilyChild = {
+    id: string;
+    nickname: string;
+    ageBand: '8_10' | '11_12' | '13_14';
+    status: 'ACTIVE' | 'PAUSED';
+    textAllowed: boolean;
+    historyAllowed: boolean;
+    textGranted?: boolean;
+    historyGranted?: boolean;
+    textExpiresAt?: string;
+    historyExpiresAt?: string;
+};
+
+export type FamilySession = {
+    mode: 'ANONYMOUS' | 'PARENT' | 'CHILD' | 'LOCKED';
+    csrfToken: string;
+    synthetic: true;
+    familyId?: string;
+    child?: FamilyChild;
+};
+
+export type FamilyDocuments = {
+    version: string;
+    text: string;
+    history: string;
+    synthetic: true;
+};
+
+export type FamilyChallenge = {
+    challengeId: string;
+    devCode: string;
+    synthetic: true;
+};
+
+export type FamilyLoginRequest = {
+    identity: 'aurora' | 'comet';
+};
+
+export type FamilyProofRequest = {
+    challengeId: string;
+    code: string;
+};
+
+export type FamilyReauthRequest = {
+    action: FamilyAction;
+};
+
+export type FamilyReauthResponse = {
+    receiptId: string;
+};
+
+export type FamilyCommand = {
+    action: FamilyAction;
+    receiptId: string;
+    idempotencyKey: string;
+};
+
+export type FamilyResult = {
+    ok: true;
+};
+
+export type FamilyError = {
+    code: 'UNAUTHENTICATED' | 'FORBIDDEN' | 'INVALID_REQUEST' | 'CONFLICT' | 'EXPIRED_PROOF' | 'INVALID_CODE' | 'RATE_LIMITED' | 'UNAVAILABLE';
+    remainingAttempts?: number;
+    retryAfterSeconds?: number;
+};
+
 export type GetHealthData = {
     body?: never;
     path?: never;
@@ -138,3 +232,429 @@ export type GetDemoScenarioResponses = {
 };
 
 export type GetDemoScenarioResponse = GetDemoScenarioResponses[keyof GetDemoScenarioResponses];
+
+export type BootstrapFamilyData = {
+    body?: never;
+    headers: {
+        'X-Probyu-Bootstrap': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/family/bootstrap';
+};
+
+export type BootstrapFamilyErrors = {
+    /**
+     * Safe failure
+     */
+    400: FamilyError;
+    /**
+     * Safe failure
+     */
+    401: FamilyError;
+    /**
+     * Safe failure
+     */
+    403: FamilyError;
+    /**
+     * Safe failure
+     */
+    409: FamilyError;
+    /**
+     * Safe failure
+     */
+    429: FamilyError;
+    /**
+     * Safe failure
+     */
+    503: FamilyError;
+};
+
+export type BootstrapFamilyError = BootstrapFamilyErrors[keyof BootstrapFamilyErrors];
+
+export type BootstrapFamilyResponses = {
+    /**
+     * Success
+     */
+    200: FamilySession;
+};
+
+export type BootstrapFamilyResponse = BootstrapFamilyResponses[keyof BootstrapFamilyResponses];
+
+export type GetFamilySessionData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/family/session';
+};
+
+export type GetFamilySessionErrors = {
+    /**
+     * Safe failure
+     */
+    400: FamilyError;
+    /**
+     * Safe failure
+     */
+    401: FamilyError;
+    /**
+     * Safe failure
+     */
+    403: FamilyError;
+    /**
+     * Safe failure
+     */
+    409: FamilyError;
+    /**
+     * Safe failure
+     */
+    429: FamilyError;
+    /**
+     * Safe failure
+     */
+    503: FamilyError;
+};
+
+export type GetFamilySessionError = GetFamilySessionErrors[keyof GetFamilySessionErrors];
+
+export type GetFamilySessionResponses = {
+    /**
+     * Success
+     */
+    200: FamilySession;
+};
+
+export type GetFamilySessionResponse = GetFamilySessionResponses[keyof GetFamilySessionResponses];
+
+export type GetFamilyDocumentsData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/family/documents';
+};
+
+export type GetFamilyDocumentsErrors = {
+    /**
+     * Safe failure
+     */
+    400: FamilyError;
+    /**
+     * Safe failure
+     */
+    401: FamilyError;
+    /**
+     * Safe failure
+     */
+    403: FamilyError;
+    /**
+     * Safe failure
+     */
+    409: FamilyError;
+    /**
+     * Safe failure
+     */
+    429: FamilyError;
+    /**
+     * Safe failure
+     */
+    503: FamilyError;
+};
+
+export type GetFamilyDocumentsError = GetFamilyDocumentsErrors[keyof GetFamilyDocumentsErrors];
+
+export type GetFamilyDocumentsResponses = {
+    /**
+     * Success
+     */
+    200: FamilyDocuments;
+};
+
+export type GetFamilyDocumentsResponse = GetFamilyDocumentsResponses[keyof GetFamilyDocumentsResponses];
+
+export type ChallengeFamilyLoginData = {
+    body: FamilyLoginRequest;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/family/login/challenge';
+};
+
+export type ChallengeFamilyLoginErrors = {
+    /**
+     * Safe failure
+     */
+    400: FamilyError;
+    /**
+     * Safe failure
+     */
+    401: FamilyError;
+    /**
+     * Safe failure
+     */
+    403: FamilyError;
+    /**
+     * Safe failure
+     */
+    409: FamilyError;
+    /**
+     * Safe failure
+     */
+    429: FamilyError;
+    /**
+     * Safe failure
+     */
+    503: FamilyError;
+};
+
+export type ChallengeFamilyLoginError = ChallengeFamilyLoginErrors[keyof ChallengeFamilyLoginErrors];
+
+export type ChallengeFamilyLoginResponses = {
+    /**
+     * Success
+     */
+    200: FamilyChallenge;
+};
+
+export type ChallengeFamilyLoginResponse = ChallengeFamilyLoginResponses[keyof ChallengeFamilyLoginResponses];
+
+export type LoginFamilyData = {
+    body: FamilyProofRequest;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/family/login';
+};
+
+export type LoginFamilyErrors = {
+    /**
+     * Safe failure
+     */
+    400: FamilyError;
+    /**
+     * Safe failure
+     */
+    401: FamilyError;
+    /**
+     * Safe failure
+     */
+    403: FamilyError;
+    /**
+     * Safe failure
+     */
+    409: FamilyError;
+    /**
+     * Safe failure
+     */
+    429: FamilyError;
+    /**
+     * Safe failure
+     */
+    503: FamilyError;
+};
+
+export type LoginFamilyError = LoginFamilyErrors[keyof LoginFamilyErrors];
+
+export type LoginFamilyResponses = {
+    /**
+     * Success
+     */
+    200: FamilySession;
+};
+
+export type LoginFamilyResponse = LoginFamilyResponses[keyof LoginFamilyResponses];
+
+export type ChallengeFamilyReauthData = {
+    body: FamilyReauthRequest;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/family/reauth/challenge';
+};
+
+export type ChallengeFamilyReauthErrors = {
+    /**
+     * Safe failure
+     */
+    400: FamilyError;
+    /**
+     * Safe failure
+     */
+    401: FamilyError;
+    /**
+     * Safe failure
+     */
+    403: FamilyError;
+    /**
+     * Safe failure
+     */
+    409: FamilyError;
+    /**
+     * Safe failure
+     */
+    429: FamilyError;
+    /**
+     * Safe failure
+     */
+    503: FamilyError;
+};
+
+export type ChallengeFamilyReauthError = ChallengeFamilyReauthErrors[keyof ChallengeFamilyReauthErrors];
+
+export type ChallengeFamilyReauthResponses = {
+    /**
+     * Success
+     */
+    200: FamilyChallenge;
+};
+
+export type ChallengeFamilyReauthResponse = ChallengeFamilyReauthResponses[keyof ChallengeFamilyReauthResponses];
+
+export type VerifyFamilyReauthData = {
+    body: FamilyProofRequest;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/family/reauth';
+};
+
+export type VerifyFamilyReauthErrors = {
+    /**
+     * Safe failure
+     */
+    400: FamilyError;
+    /**
+     * Safe failure
+     */
+    401: FamilyError;
+    /**
+     * Safe failure
+     */
+    403: FamilyError;
+    /**
+     * Safe failure
+     */
+    409: FamilyError;
+    /**
+     * Safe failure
+     */
+    429: FamilyError;
+    /**
+     * Safe failure
+     */
+    503: FamilyError;
+};
+
+export type VerifyFamilyReauthError = VerifyFamilyReauthErrors[keyof VerifyFamilyReauthErrors];
+
+export type VerifyFamilyReauthResponses = {
+    /**
+     * Success
+     */
+    200: FamilyReauthResponse;
+};
+
+export type VerifyFamilyReauthResponse = VerifyFamilyReauthResponses[keyof VerifyFamilyReauthResponses];
+
+export type ExecuteFamilyCommandData = {
+    body: FamilyCommand;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/family/commands';
+};
+
+export type ExecuteFamilyCommandErrors = {
+    /**
+     * Safe failure
+     */
+    400: FamilyError;
+    /**
+     * Safe failure
+     */
+    401: FamilyError;
+    /**
+     * Safe failure
+     */
+    403: FamilyError;
+    /**
+     * Safe failure
+     */
+    409: FamilyError;
+    /**
+     * Safe failure
+     */
+    429: FamilyError;
+    /**
+     * Safe failure
+     */
+    503: FamilyError;
+};
+
+export type ExecuteFamilyCommandError = ExecuteFamilyCommandErrors[keyof ExecuteFamilyCommandErrors];
+
+export type ExecuteFamilyCommandResponses = {
+    /**
+     * Success
+     */
+    200: FamilyResult;
+};
+
+export type ExecuteFamilyCommandResponse = ExecuteFamilyCommandResponses[keyof ExecuteFamilyCommandResponses];
+
+export type LogoutFamilyData = {
+    body?: never;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/family/logout';
+};
+
+export type LogoutFamilyErrors = {
+    /**
+     * Safe failure
+     */
+    400: FamilyError;
+    /**
+     * Safe failure
+     */
+    401: FamilyError;
+    /**
+     * Safe failure
+     */
+    403: FamilyError;
+    /**
+     * Safe failure
+     */
+    409: FamilyError;
+    /**
+     * Safe failure
+     */
+    429: FamilyError;
+    /**
+     * Safe failure
+     */
+    503: FamilyError;
+};
+
+export type LogoutFamilyError = LogoutFamilyErrors[keyof LogoutFamilyErrors];
+
+export type LogoutFamilyResponses = {
+    /**
+     * Success
+     */
+    200: FamilyResult;
+};
+
+export type LogoutFamilyResponse = LogoutFamilyResponses[keyof LogoutFamilyResponses];
