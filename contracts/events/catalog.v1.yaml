@@ -1,0 +1,26 @@
+version: 1
+events:
+  - name: parent_activated
+    owner: identity
+  - name: consent_changed
+    owner: identity
+  - name: child_session_started
+    owner: identity
+  - name: question_accepted
+    owner: answer
+  - name: explanation_delivery_completed
+    owner: answer
+  - name: probe_offered
+    owner: probe
+  - name: probe_started
+    owner: probe
+  - name: result_accepted
+    owner: probe
+  - name: reflection_recorded
+    owner: probe
+  - name: loop_completed
+    owner: probe
+  - name: evidence_recorded
+    owner: pattern
+  - name: parent_episode_opened
+    owner: parent

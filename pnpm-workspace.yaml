@@ -1,0 +1,11 @@
+packages:
+  - apps/*
+  - contracts/*
+  - packages/*
+  - services/*
+
+allowBuilds:
+  esbuild: true
+
+minimumReleaseAgeExclude:
+  - tailwind-merge@3.7.0

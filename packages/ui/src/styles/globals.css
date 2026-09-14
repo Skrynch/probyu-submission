@@ -1,0 +1,175 @@
+@import 'tailwindcss';
+
+@source '../components';
+
+/*
+ * Семантические токены «Пробую». Базовые значения: docs/DESIGN_SYSTEM.md §5.
+ * measure-* — мерная лента визуального языка «Мерная шкала» (F-01).
+ * Тёмная тема в первый срез не входит.
+ */
+:root {
+  color-scheme: light;
+
+  --background: #fafaf7;
+  --foreground: #202927;
+  --card: #ffffff;
+  --card-foreground: #202927;
+  --popover: #ffffff;
+  --popover-foreground: #202927;
+  --primary: #146455;
+  --primary-hover: #0f4f43;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1ea;
+  --secondary-foreground: #202927;
+  --muted: #eef1ea;
+  --muted-foreground: #5a625d;
+  --accent: #e0eee7;
+  --accent-foreground: #202927;
+  --border: #ccd2ca;
+  --input: #77817a;
+  --ring: #146455;
+  --success: #246648;
+  --success-foreground: #ffffff;
+  --warning: #8a4b0f;
+  --warning-foreground: #ffffff;
+  --destructive: #ad322c;
+  --destructive-foreground: #ffffff;
+  --info: #335f99;
+  --info-foreground: #ffffff;
+
+  --measure: #f4c542;
+  --measure-foreground: #202927;
+  --measure-muted: #5c4a0e;
+  --measure-tick: #3a3210;
+
+  --radius: 0.75rem;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-measure: var(--measure);
+  --color-measure-foreground: var(--measure-foreground);
+  --color-measure-muted: var(--measure-muted);
+  --color-measure-tick: var(--measure-tick);
+
+  --radius-md: calc(var(--radius) - 0.25rem);
+  --radius-lg: var(--radius);
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+
+  --font-sans:
+    system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    sans-serif;
+
+  --text-caption: 0.875rem;
+  --text-caption--line-height: 1.25rem;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5rem;
+  --text-child: 1.125rem;
+  --text-child--line-height: 1.75rem;
+  --text-title-sm: 1.25rem;
+  --text-title-sm--line-height: 1.75rem;
+  --text-title: 1.5rem;
+  --text-title--line-height: 2rem;
+  --text-display: 2rem;
+  --text-display--line-height: 2.5rem;
+
+  --ease-out: var(--ease-out);
+  --ease-in-out: var(--ease-in-out);
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+
+  html {
+    min-width: 320px;
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100dvh;
+    margin: 0;
+    background: var(--background);
+    color: var(--foreground);
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  ::selection {
+    background: var(--measure);
+    color: var(--measure-foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  a {
+    text-underline-offset: 0.2em;
+    text-decoration-thickness: 1px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  p,
+  li {
+    text-wrap: pretty;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+    scroll-behavior: auto !important;
+  }
+}

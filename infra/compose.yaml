@@ -1,0 +1,20 @@
+name: probyu-local
+services:
+  postgres:
+    image: postgres:18.6-alpine
+    environment:
+      POSTGRES_DB: probyu
+      POSTGRES_USER: probyu
+      POSTGRES_PASSWORD: probyu_local
+    ports:
+      - '127.0.0.1:54329:5432'
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U probyu -d probyu']
+      interval: 2s
+      timeout: 2s
+      retries: 20
+    volumes:
+      - probyu_postgres:/var/lib/postgresql
+
+volumes:
+  probyu_postgres:

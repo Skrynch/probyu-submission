@@ -1,0 +1,258 @@
+openapi: 3.1.0
+info:
+  title: Probyu API
+  version: 0.1.0
+  description: Public fixed-demo and operational endpoints for the M1 foundation.
+servers:
+  - url: /
+    description: Same-origin API
+tags:
+  - name: system
+  - name: demo
+paths:
+  /v1/health:
+    get:
+      operationId: getHealth
+      tags: [system]
+      summary: Return API liveness without exposing environment details
+      responses:
+        '200':
+          description: API is serving requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+  /v1/demo/scenarios:
+    get:
+      operationId: listDemoScenarios
+      tags: [demo]
+      summary: List published fixed demo scenarios
+      responses:
+        '200':
+          description: Safe public scenarios
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoScenarioList'
+  /v1/demo/scenarios/{scenarioId}:
+    get:
+      operationId: getDemoScenario
+      tags: [demo]
+      summary: Return one versioned fixed demo scenario
+      parameters:
+        - name: scenarioId
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '^[a-z0-9-]{1,64}$'
+      responses:
+        '400':
+          description: Scenario identifier is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '200':
+          description: Safe public scenario
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DemoScenario'
+        '404':
+          description: Scenario was not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    HealthResponse:
+      type: object
+      additionalProperties: false
+      required: [status, service]
+      properties:
+        status:
+          type: string
+          const: ok
+        service:
+          type: string
+          const: probyu-api
+    DemoScenarioSummary:
+      type: object
+      additionalProperties: false
+      required: [id, version, kind, title, question, ageBand, durationMinutes, contentHash]
+      properties:
+        id:
+          type: string
+        version:
+          type: integer
+          minimum: 1
+        kind:
+          type: string
+          const: FIXED_DEMO
+        title:
+          type: string
+        question:
+          type: string
+        ageBand:
+          type: string
+        durationMinutes:
+          type: integer
+          minimum: 1
+          maximum: 30
+        contentHash:
+          type: string
+          pattern: '^[a-f0-9]{64}$'
+    DemoScenarioList:
+      type: object
+      additionalProperties: false
+      required: [items]
+      properties:
+        items:
+          type: array
+          maxItems: 10
+          items:
+            $ref: '#/components/schemas/DemoScenarioSummary'
+    DemoScenario:
+      type: object
+      additionalProperties: false
+      required:
+        - id
+        - version
+        - kind
+        - title
+        - question
+        - ageBand
+        - durationMinutes
+        - contentHash
+        - explanation
+        - probe
+        - resultOptions
+        - reflection
+        - observation
+        - completion
+      properties:
+        id:
+          type: string
+        version:
+          type: integer
+          minimum: 1
+        kind:
+          type: string
+          const: FIXED_DEMO
+        title:
+          type: string
+        question:
+          type: string
+        ageBand:
+          type: string
+        durationMinutes:
+          type: integer
+          minimum: 1
+          maximum: 30
+        contentHash:
+          type: string
+          pattern: '^[a-f0-9]{64}$'
+        explanation:
+          type: array
+          minItems: 1
+          maxItems: 6
+          items:
+            type: string
+        probe:
+          $ref: '#/components/schemas/DemoProbe'
+        resultOptions:
+          type: array
+          minItems: 2
+          maxItems: 5
+          items:
+            $ref: '#/components/schemas/DemoResultOption'
+        reflection:
+          $ref: '#/components/schemas/DemoReflection'
+        observation:
+          $ref: '#/components/schemas/DemoObservation'
+        completion:
+          $ref: '#/components/schemas/DemoCompletion'
+    DemoProbe:
+      type: object
+      additionalProperties: false
+      required: [goal, durationMinutes, materials, steps, safetyNotes]
+      properties:
+        goal:
+          type: string
+        durationMinutes:
+          type: integer
+          minimum: 1
+          maximum: 15
+        materials:
+          type: array
+          minItems: 1
+          maxItems: 5
+          items:
+            type: string
+        steps:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items:
+            type: string
+        safetyNotes:
+          type: array
+          minItems: 1
+          maxItems: 5
+          items:
+            type: string
+    DemoResultOption:
+      type: object
+      additionalProperties: false
+      required: [id, label, feedback]
+      properties:
+        id:
+          type: string
+        label:
+          type: string
+        feedback:
+          type: string
+    DemoReflection:
+      type: object
+      additionalProperties: false
+      required: [prompt, options]
+      properties:
+        prompt:
+          type: string
+        options:
+          type: array
+          minItems: 2
+          maxItems: 5
+          items:
+            type: string
+    DemoObservation:
+      type: object
+      additionalProperties: false
+      required: [label, limits]
+      properties:
+        label:
+          type: string
+        limits:
+          type: string
+    DemoCompletion:
+      type: object
+      additionalProperties: false
+      required: [title, body, cta]
+      properties:
+        title:
+          type: string
+        body:
+          type: string
+        cta:
+          type: string
+    ErrorResponse:
+      type: object
+      additionalProperties: false
+      required: [code, message]
+      properties:
+        code:
+          type: string
+        message:
+          type: string

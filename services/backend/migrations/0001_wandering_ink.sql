@@ -1,0 +1,2 @@
+ALTER TABLE "content"."fixed_demo_scenarios" ADD CONSTRAINT "fixed_demo_scenarios_version_positive" CHECK ("content"."fixed_demo_scenarios"."version" >= 1);--> statement-breakpoint
+ALTER TABLE "content"."fixed_demo_scenarios" ADD CONSTRAINT "fixed_demo_scenarios_content_hash_format" CHECK ("content"."fixed_demo_scenarios"."content_hash" ~ '^[a-f0-9]{64}$');

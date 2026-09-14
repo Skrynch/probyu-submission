@@ -1,0 +1,63 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+.envrc
+.direnv/
+.netrc
+.pypirc
+secrets/
+credentials/
+*.secret
+*.pem
+*.key
+*.p8
+*.p12
+*.jks
+*.keystore
+service-account*.json
+credentials*.json
+
+# User and private data
+uploads/
+recordings/
+exports/
+data/private/
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.backup
+
+# Dependencies and build output
+node_modules/
+.pnpm-store/
+dist/
+build/
+coverage/
+.turbo/
+.eslintcache
+*.tsbuildinfo
+*.log
+
+# Tests, editors and operating systems
+test-results/
+playwright-report/
+blob-report/
+.auth/
+.idea/
+.vscode/
+*.iml
+.DS_Store
+tmp/
+temp/
+.cache/
+
+# Infrastructure state
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+!*.example.tfvars

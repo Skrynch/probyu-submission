@@ -1,0 +1,93 @@
+{
+  "id": "76961e2f-a5af-4408-b8f4-05dfe8983ea6",
+  "prevId": "cae60c8f-e706-4dfd-8938-cbcd0d0f1ad8",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "content.fixed_demo_scenarios": {
+      "name": "fixed_demo_scenarios",
+      "schema": "content",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locale": {
+          "name": "locale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "age_band": {
+          "name": "age_band",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "fixed_demo_scenarios_id_version_pk": {
+          "name": "fixed_demo_scenarios_id_version_pk",
+          "columns": [
+            "id",
+            "version"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "fixed_demo_scenarios_version_positive": {
+          "name": "fixed_demo_scenarios_version_positive",
+          "value": "\"content\".\"fixed_demo_scenarios\".\"version\" >= 1"
+        },
+        "fixed_demo_scenarios_content_hash_format": {
+          "name": "fixed_demo_scenarios_content_hash_format",
+          "value": "\"content\".\"fixed_demo_scenarios\".\"content_hash\" ~ '^[a-f0-9]{64}$'"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {
+    "content": "content"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "name": "@probyu/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./generated/index.ts",
+    "./client": "./generated/client/index.ts",
+    "./schemas": "./generated/schemas.gen.ts",
+    "./types": "./generated/types.gen.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hey-api/client-fetch": "0.13.1"
+  },
+  "devDependencies": {
+    "typescript": "6.0.3"
+  }
+}
