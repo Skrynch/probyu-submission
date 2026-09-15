@@ -1,0 +1,3304 @@
+{
+  "id": "065a4246-8d3b-4519-8ffa-6b781a306034",
+  "prevId": "22f9caf8-8574-45fa-8718-bac5e709a800",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "content.fixed_demo_scenarios": {
+      "name": "fixed_demo_scenarios",
+      "schema": "content",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "locale": {
+          "name": "locale",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "age_band": {
+          "name": "age_band",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content": {
+          "name": "content",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "fixed_demo_scenarios_id_version_pk": {
+          "name": "fixed_demo_scenarios_id_version_pk",
+          "columns": [
+            "id",
+            "version"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "fixed_demo_scenarios_version_positive": {
+          "name": "fixed_demo_scenarios_version_positive",
+          "value": "\"content\".\"fixed_demo_scenarios\".\"version\" >= 1"
+        },
+        "fixed_demo_scenarios_content_hash_format": {
+          "name": "fixed_demo_scenarios_content_hash_format",
+          "value": "\"content\".\"fixed_demo_scenarios\".\"content_hash\" ~ '^[a-f0-9]{64}$'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "identity.auth_budgets": {
+      "name": "auth_budgets",
+      "schema": "identity",
+      "columns": {
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "window_start": {
+          "name": "window_start",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "maintenance_read": {
+          "name": "maintenance_read",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "maintenance_delete": {
+          "name": "maintenance_delete",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "budget_scope": {
+          "name": "budget_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "key = current_setting('app.budget_key',true)",
+          "withCheck": "key = current_setting('app.budget_key',true)"
+        }
+      },
+      "checkConstraints": {
+        "auth_budgets_key_check": {
+          "name": "auth_budgets_key_check",
+          "value": "key ~ '^[a-f0-9]{64}$'::text"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "family.children": {
+      "name": "children",
+      "schema": "family",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nickname": {
+          "name": "nickname",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "age_band": {
+          "name": "age_band",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "access_epoch": {
+          "name": "access_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "children_family_id_fkey": {
+          "name": "children_family_id_fkey",
+          "tableFrom": "children",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "children_family_id_id_key": {
+          "name": "children_family_id_id_key",
+          "columns": [
+            "family_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "children_nickname_check": {
+          "name": "children_nickname_check",
+          "value": "nickname = 'Исследователь'::text"
+        },
+        "children_age_band_check": {
+          "name": "children_age_band_check",
+          "value": "age_band = ANY (ARRAY['8_10'::text, '11_12'::text, '13_14'::text])"
+        },
+        "children_status_check": {
+          "name": "children_status_check",
+          "value": "status = ANY (ARRAY['ACTIVE'::text, 'PAUSED'::text])"
+        },
+        "children_access_epoch_check": {
+          "name": "children_access_epoch_check",
+          "value": "access_epoch > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "family.command_receipts": {
+      "name": "command_receipts",
+      "schema": "family",
+      "columns": {
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "command_key": {
+          "name": "command_key",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reauth_id": {
+          "name": "reauth_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "action_hash": {
+          "name": "action_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result": {
+          "name": "result",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "command_receipts_family_id_fkey": {
+          "name": "command_receipts_family_id_fkey",
+          "tableFrom": "command_receipts",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "command_receipts_parent_id_fkey": {
+          "name": "command_receipts_parent_id_fkey",
+          "tableFrom": "command_receipts",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "tableTo": "parents",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "command_receipts_pkey": {
+          "name": "command_receipts_pkey",
+          "columns": [
+            "command_key",
+            "family_id",
+            "parent_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "family.consent_documents": {
+      "name": "consent_documents",
+      "schema": "family",
+      "columns": {
+        "version": {
+          "name": "version",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "text_body": {
+          "name": "text_body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "history_body": {
+          "name": "history_body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "consent_documents_content_hash_check": {
+          "name": "consent_documents_content_hash_check",
+          "value": "content_hash ~ '^[a-f0-9]{64}$'::text"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "family.consent_projections": {
+      "name": "consent_projections",
+      "schema": "family",
+      "columns": {
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "purpose": {
+          "name": "purpose",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "receipt_id": {
+          "name": "receipt_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "granted": {
+          "name": "granted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_version": {
+          "name": "document_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "consent_projections_family_id_child_id_receipt_id_fkey": {
+          "name": "consent_projections_family_id_child_id_receipt_id_fkey",
+          "tableFrom": "consent_projections",
+          "columnsFrom": [
+            "family_id",
+            "child_id",
+            "receipt_id"
+          ],
+          "tableTo": "consent_receipts",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "consent_projections_pkey": {
+          "name": "consent_projections_pkey",
+          "columns": [
+            "child_id",
+            "family_id",
+            "purpose"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "consent_projections_purpose_check": {
+          "name": "consent_projections_purpose_check",
+          "value": "purpose = ANY (ARRAY['TEXT'::text, 'HISTORY'::text])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "family.consent_receipts": {
+      "name": "consent_receipts",
+      "schema": "family",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reauth_id": {
+          "name": "reauth_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "document_version": {
+          "name": "document_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "purpose": {
+          "name": "purpose",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "granted": {
+          "name": "granted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "prior_id": {
+          "name": "prior_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "consent_receipts_parent_id_fkey": {
+          "name": "consent_receipts_parent_id_fkey",
+          "tableFrom": "consent_receipts",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "tableTo": "parents",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "consent_receipts_reauth_id_fkey": {
+          "name": "consent_receipts_reauth_id_fkey",
+          "tableFrom": "consent_receipts",
+          "columnsFrom": [
+            "reauth_id"
+          ],
+          "tableTo": "reauth_receipts",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "consent_receipts_document_version_fkey": {
+          "name": "consent_receipts_document_version_fkey",
+          "tableFrom": "consent_receipts",
+          "columnsFrom": [
+            "document_version"
+          ],
+          "tableTo": "consent_documents",
+          "schemaTo": "family",
+          "columnsTo": [
+            "version"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "consent_receipts_prior_id_fkey": {
+          "name": "consent_receipts_prior_id_fkey",
+          "tableFrom": "consent_receipts",
+          "columnsFrom": [
+            "prior_id"
+          ],
+          "tableTo": "consent_receipts",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "consent_receipts_family_id_child_id_fkey": {
+          "name": "consent_receipts_family_id_child_id_fkey",
+          "tableFrom": "consent_receipts",
+          "columnsFrom": [
+            "family_id",
+            "child_id"
+          ],
+          "tableTo": "children",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "consent_receipts_family_id_child_id_id_key": {
+          "name": "consent_receipts_family_id_child_id_id_key",
+          "columns": [
+            "child_id",
+            "family_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "maintenance_read": {
+          "name": "maintenance_read",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "consent_receipts_purpose_check": {
+          "name": "consent_receipts_purpose_check",
+          "value": "purpose = ANY (ARRAY['TEXT'::text, 'HISTORY'::text])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "family.families": {
+      "name": "families",
+      "schema": "family",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "owner_id": {
+          "name": "owner_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "access_epoch": {
+          "name": "access_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "families_owner_id_fkey": {
+          "name": "families_owner_id_fkey",
+          "tableFrom": "families",
+          "columnsFrom": [
+            "owner_id"
+          ],
+          "tableTo": "parents",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "family_has_owner": {
+          "name": "family_has_owner",
+          "tableFrom": "families",
+          "columnsFrom": [
+            "id",
+            "owner_id"
+          ],
+          "tableTo": "memberships",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "parent_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "families_id_owner_id_key": {
+          "name": "families_id_owner_id_key",
+          "columns": [
+            "id",
+            "owner_id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "families_status_check": {
+          "name": "families_status_check",
+          "value": "status = ANY (ARRAY['ACTIVE'::text, 'CLOSED'::text])"
+        },
+        "families_access_epoch_check": {
+          "name": "families_access_epoch_check",
+          "value": "access_epoch > 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "ops.family_outbox": {
+      "name": "family_outbox",
+      "schema": "ops",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_type": {
+          "name": "event_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_epoch": {
+          "name": "access_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "family_outbox_family_id_fkey": {
+          "name": "family_outbox_family_id_fkey",
+          "tableFrom": "family_outbox",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "family_outbox_state_check": {
+          "name": "family_outbox_state_check",
+          "value": "state = ANY (ARRAY['PENDING'::text, 'PROCESSED'::text])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "family.memberships": {
+      "name": "memberships",
+      "schema": "family",
+      "columns": {
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "memberships_family_id_fkey": {
+          "name": "memberships_family_id_fkey",
+          "tableFrom": "memberships",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "memberships_parent_id_fkey": {
+          "name": "memberships_parent_id_fkey",
+          "tableFrom": "memberships",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "tableTo": "parents",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "memberships_family_id_parent_id_fkey": {
+          "name": "memberships_family_id_parent_id_fkey",
+          "tableFrom": "memberships",
+          "columnsFrom": [
+            "family_id",
+            "parent_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id",
+            "owner_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "memberships_pkey": {
+          "name": "memberships_pkey",
+          "columns": [
+            "family_id",
+            "parent_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {
+        "memberships_family_id_key": {
+          "name": "memberships_family_id_key",
+          "columns": [
+            "family_id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "memberships_role_check": {
+          "name": "memberships_role_check",
+          "value": "role = 'OWNER'::text"
+        },
+        "memberships_status_check": {
+          "name": "memberships_status_check",
+          "value": "status = 'ACTIVE'::text"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "identity.parents": {
+      "name": "parents",
+      "schema": "identity",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "synthetic_key": {
+          "name": "synthetic_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "attempt_window": {
+          "name": "attempt_window",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "parents_synthetic_key_key": {
+          "name": "parents_synthetic_key_key",
+          "columns": [
+            "synthetic_key"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "identity_scope": {
+          "name": "identity_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "(((id)::text = current_setting('app.family_id'::text, true)) OR (synthetic_key = current_setting('app.login_identity'::text, true)))",
+          "withCheck": "((synthetic_key = current_setting('app.login_identity'::text, true)) OR ((id)::text = current_setting('app.family_id'::text, true)))"
+        }
+      },
+      "checkConstraints": {
+        "parents_synthetic_key_check": {
+          "name": "parents_synthetic_key_check",
+          "value": "synthetic_key = ANY (ARRAY['aurora'::text, 'comet'::text])"
+        },
+        "parents_status_check": {
+          "name": "parents_status_check",
+          "value": "status = ANY (ARRAY['ACTIVE'::text, 'SUSPENDED'::text, 'CLOSED'::text])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "family.processing_authorizations": {
+      "name": "processing_authorizations",
+      "schema": "family",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "purpose": {
+          "name": "purpose",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_epoch": {
+          "name": "access_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_version": {
+          "name": "policy_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "processing_authorizations_family_id_child_id_fkey": {
+          "name": "processing_authorizations_family_id_child_id_fkey",
+          "tableFrom": "processing_authorizations",
+          "columnsFrom": [
+            "family_id",
+            "child_id"
+          ],
+          "tableTo": "children",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "maintenance_read": {
+          "name": "maintenance_read",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "maintenance_delete": {
+          "name": "maintenance_delete",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "processing_authorizations_purpose_check": {
+          "name": "processing_authorizations_purpose_check",
+          "value": "purpose = ANY (ARRAY['TEXT'::text, 'HISTORY'::text])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "identity.proofs": {
+      "name": "proofs",
+      "schema": "identity",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "session_id": {
+          "name": "session_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "purpose": {
+          "name": "purpose",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "synthetic_key": {
+          "name": "synthetic_key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "action_hash": {
+          "name": "action_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "code_digest": {
+          "name": "code_digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "consumed_at": {
+          "name": "consumed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "proofs_session_idx": {
+          "name": "proofs_session_idx",
+          "columns": [
+            {
+              "expression": "session_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "proofs_session_id_fkey": {
+          "name": "proofs_session_id_fkey",
+          "tableFrom": "proofs",
+          "columnsFrom": [
+            "session_id"
+          ],
+          "tableTo": "sessions",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "maintenance_read": {
+          "name": "maintenance_read",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "maintenance_delete": {
+          "name": "maintenance_delete",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "proof_scope": {
+          "name": "proof_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((session_id)::text = current_setting('app.session_id'::text, true))",
+          "withCheck": "((session_id)::text = current_setting('app.session_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "proofs_purpose_check": {
+          "name": "proofs_purpose_check",
+          "value": "purpose = ANY (ARRAY['LOGIN'::text, 'REAUTH'::text])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "family.reauth_receipts": {
+      "name": "reauth_receipts",
+      "schema": "family",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "method": {
+          "name": "method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'SYNTHETIC'"
+        },
+        "assurance": {
+          "name": "assurance",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'TEST_ONLY'"
+        },
+        "adult_exclusive": {
+          "name": "adult_exclusive",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "session_id": {
+          "name": "session_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "registration_id": {
+          "name": "registration_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action_hash": {
+          "name": "action_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_version": {
+          "name": "policy_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "privilege_epoch": {
+          "name": "privilege_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "consumed_at": {
+          "name": "consumed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "reauth_receipts_family_id_fkey": {
+          "name": "reauth_receipts_family_id_fkey",
+          "tableFrom": "reauth_receipts",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "reauth_receipts_parent_id_fkey": {
+          "name": "reauth_receipts_parent_id_fkey",
+          "tableFrom": "reauth_receipts",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "tableTo": "parents",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "reauth_receipts_session_id_fkey": {
+          "name": "reauth_receipts_session_id_fkey",
+          "tableFrom": "reauth_receipts",
+          "columnsFrom": [
+            "session_id"
+          ],
+          "tableTo": "sessions",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "reauth_receipts_registration_id_fkey": {
+          "name": "reauth_receipts_registration_id_fkey",
+          "tableFrom": "reauth_receipts",
+          "columnsFrom": [
+            "registration_id"
+          ],
+          "tableTo": "registrations",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "maintenance_read": {
+          "name": "maintenance_read",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "maintenance_delete": {
+          "name": "maintenance_delete",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "reauth_synthetic_only": {
+          "name": "reauth_synthetic_only",
+          "value": "method = 'SYNTHETIC' AND assurance = 'TEST_ONLY' AND NOT adult_exclusive"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "identity.registrations": {
+      "name": "registrations",
+      "schema": "identity",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ACTIVE'"
+        },
+        "privilege_epoch": {
+          "name": "privilege_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        }
+      },
+      "indexes": {
+        "registrationsInIdentity_family_idx": {
+          "name": "registrationsInIdentity_family_idx",
+          "columns": [
+            {
+              "expression": "family_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "registrationsInIdentity_membership_fk": {
+          "name": "registrationsInIdentity_membership_fk",
+          "tableFrom": "registrations",
+          "columnsFrom": [
+            "family_id",
+            "parent_id"
+          ],
+          "tableTo": "memberships",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "parent_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "registrations_family_id_fkey": {
+          "name": "registrations_family_id_fkey",
+          "tableFrom": "registrations",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "registrations_parent_id_fkey": {
+          "name": "registrations_parent_id_fkey",
+          "tableFrom": "registrations",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "tableTo": "parents",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "registrations_family_id_id_key": {
+          "name": "registrations_family_id_id_key",
+          "columns": [
+            "family_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "maintenance_read": {
+          "name": "maintenance_read",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "maintenance_delete": {
+          "name": "maintenance_delete",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "registration_scope": {
+          "name": "registration_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "registrations_status_check": {
+          "name": "registrations_status_check",
+          "value": "status = ANY (ARRAY['ACTIVE'::text, 'REVOKED'::text])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "family.representatives": {
+      "name": "representatives",
+      "schema": "family",
+      "columns": {
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "method": {
+          "name": "method",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_version": {
+          "name": "policy_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "representatives_family_id_fkey": {
+          "name": "representatives_family_id_fkey",
+          "tableFrom": "representatives",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "representatives_family_id_parent_id_fkey": {
+          "name": "representatives_family_id_parent_id_fkey",
+          "tableFrom": "representatives",
+          "columnsFrom": [
+            "family_id",
+            "parent_id"
+          ],
+          "tableTo": "memberships",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "parent_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((family_id)::text = current_setting('app.family_id'::text, true))",
+          "withCheck": "((family_id)::text = current_setting('app.family_id'::text, true))"
+        }
+      },
+      "checkConstraints": {
+        "representatives_method_check": {
+          "name": "representatives_method_check",
+          "value": "method = 'SYNTHETIC'::text"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "identity.sessions": {
+      "name": "sessions",
+      "schema": "identity",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "digest": {
+          "name": "digest",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "parent_id": {
+          "name": "parent_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "registration_id": {
+          "name": "registration_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mode": {
+          "name": "mode",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "privilege_epoch": {
+          "name": "privilege_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "last_seen": {
+          "name": "last_seen",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parent_seen": {
+          "name": "parent_seen",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "attempts": {
+          "name": "attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "attempt_window": {
+          "name": "attempt_window",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "sessionsInIdentity_family_idx": {
+          "name": "sessionsInIdentity_family_idx",
+          "columns": [
+            {
+              "expression": "family_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        },
+        "sessions_registration_idx": {
+          "name": "sessions_registration_idx",
+          "columns": [
+            {
+              "expression": "registration_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "sessionsInIdentity_membership_fk": {
+          "name": "sessionsInIdentity_membership_fk",
+          "tableFrom": "sessions",
+          "columnsFrom": [
+            "family_id",
+            "parent_id"
+          ],
+          "tableTo": "memberships",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "parent_id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "sessions_family_id_fkey": {
+          "name": "sessions_family_id_fkey",
+          "tableFrom": "sessions",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "sessions_parent_id_fkey": {
+          "name": "sessions_parent_id_fkey",
+          "tableFrom": "sessions",
+          "columnsFrom": [
+            "parent_id"
+          ],
+          "tableTo": "parents",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "sessions_family_id_registration_id_fkey": {
+          "name": "sessions_family_id_registration_id_fkey",
+          "tableFrom": "sessions",
+          "columnsFrom": [
+            "family_id",
+            "registration_id"
+          ],
+          "tableTo": "registrations",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "family_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "sessions_family_id_child_id_fkey": {
+          "name": "sessions_family_id_child_id_fkey",
+          "tableFrom": "sessions",
+          "columnsFrom": [
+            "family_id",
+            "child_id"
+          ],
+          "tableTo": "children",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "sessions_digest_key": {
+          "name": "sessions_digest_key",
+          "columns": [
+            "digest"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "maintenance_read": {
+          "name": "maintenance_read",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "maintenance_delete": {
+          "name": "maintenance_delete",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": [
+            "probyu_family_maintenance"
+          ],
+          "using": "true"
+        },
+        "session_scope": {
+          "name": "session_scope",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "public"
+          ],
+          "using": "((digest = current_setting('app.session_digest'::text, true)) OR ((family_id)::text = current_setting('app.family_id'::text, true)))",
+          "withCheck": "((digest = current_setting('app.session_digest'::text, true)) OR ((family_id)::text = current_setting('app.family_id'::text, true)))"
+        }
+      },
+      "checkConstraints": {
+        "sessions_digest_check": {
+          "name": "sessions_digest_check",
+          "value": "digest ~ '^[a-f0-9]{64}$'::text"
+        },
+        "sessions_mode_check": {
+          "name": "sessions_mode_check",
+          "value": "mode = ANY (ARRAY['ANONYMOUS'::text, 'PARENT'::text, 'CHILD'::text])"
+        },
+        "sessions_check": {
+          "name": "sessions_check",
+          "value": "((mode = 'ANONYMOUS'::text) AND (family_id IS NULL) AND (parent_id IS NULL) AND (registration_id IS NULL) AND (child_id IS NULL)) OR ((mode = 'PARENT'::text) AND (family_id IS NOT NULL) AND (parent_id IS NOT NULL) AND (registration_id IS NOT NULL) AND (child_id IS NULL)) OR ((mode = 'CHILD'::text) AND (family_id IS NOT NULL) AND (parent_id IS NOT NULL) AND (registration_id IS NOT NULL) AND (child_id IS NOT NULL))"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "research.answer_delivery_events": {
+      "name": "answer_delivery_events",
+      "schema": "research",
+      "columns": {
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer_run_id": {
+          "name": "answer_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sequence": {
+          "name": "sequence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_type": {
+          "name": "event_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "artifact_id": {
+          "name": "artifact_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "answer_delivery_events_run_scope_fkey": {
+          "name": "answer_delivery_events_run_scope_fkey",
+          "tableFrom": "answer_delivery_events",
+          "columnsFrom": [
+            "family_id",
+            "child_id",
+            "answer_run_id"
+          ],
+          "tableTo": "answer_runs",
+          "schemaTo": "research",
+          "columnsTo": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "answer_delivery_events_artifact_scope_fkey": {
+          "name": "answer_delivery_events_artifact_scope_fkey",
+          "tableFrom": "answer_delivery_events",
+          "columnsFrom": [
+            "family_id",
+            "child_id",
+            "artifact_id"
+          ],
+          "tableTo": "approved_answer_artifacts",
+          "schemaTo": "research",
+          "columnsTo": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "answer_delivery_events_answer_run_id_sequence_pk": {
+          "name": "answer_delivery_events_answer_run_id_sequence_pk",
+          "columns": [
+            "answer_run_id",
+            "sequence"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "probyu_family_runtime"
+          ],
+          "using": "family_id::text = current_setting('app.family_id', true)",
+          "withCheck": "family_id::text = current_setting('app.family_id', true)"
+        }
+      },
+      "checkConstraints": {
+        "answer_delivery_events_sequence_check": {
+          "name": "answer_delivery_events_sequence_check",
+          "value": "sequence > 0"
+        },
+        "answer_delivery_events_type_check": {
+          "name": "answer_delivery_events_type_check",
+          "value": "event_type = ANY (ARRAY['QUESTION_ACCEPTED','ANSWER_APPROVED','ANSWER_COMPLETED','TERMINAL'])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "research.answer_runs": {
+      "name": "answer_runs",
+      "schema": "research",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "session_id": {
+          "name": "session_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "registration_id": {
+          "name": "registration_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idempotency_key": {
+          "name": "idempotency_key",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "request_hash": {
+          "name": "request_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "input_ciphertext": {
+          "name": "input_ciphertext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "input_hash": {
+          "name": "input_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'RECEIVED'"
+        },
+        "safety_action": {
+          "name": "safety_action",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "failure_code": {
+          "name": "failure_code",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_epoch": {
+          "name": "access_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_access_epoch": {
+          "name": "child_access_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "session_privilege_epoch": {
+          "name": "session_privilege_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_version": {
+          "name": "policy_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kill_epoch": {
+          "name": "kill_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "adapter_version": {
+          "name": "adapter_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fence": {
+          "name": "fence",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "lease_owner": {
+          "name": "lease_owner",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lease_expires_at": {
+          "name": "lease_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "cancelled_at": {
+          "name": "cancelled_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "answer_runs_queue_idx": {
+          "name": "answer_runs_queue_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "lease_expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "with": {},
+          "method": "btree",
+          "concurrently": false
+        }
+      },
+      "foreignKeys": {
+        "answer_runs_family_id_fkey": {
+          "name": "answer_runs_family_id_fkey",
+          "tableFrom": "answer_runs",
+          "columnsFrom": [
+            "family_id"
+          ],
+          "tableTo": "families",
+          "schemaTo": "family",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "answer_runs_family_child_fkey": {
+          "name": "answer_runs_family_child_fkey",
+          "tableFrom": "answer_runs",
+          "columnsFrom": [
+            "family_id",
+            "child_id"
+          ],
+          "tableTo": "children",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "answer_runs_session_id_fkey": {
+          "name": "answer_runs_session_id_fkey",
+          "tableFrom": "answer_runs",
+          "columnsFrom": [
+            "session_id"
+          ],
+          "tableTo": "sessions",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "answer_runs_registration_id_fkey": {
+          "name": "answer_runs_registration_id_fkey",
+          "tableFrom": "answer_runs",
+          "columnsFrom": [
+            "registration_id"
+          ],
+          "tableTo": "registrations",
+          "schemaTo": "identity",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "answer_runs_policy_version_fkey": {
+          "name": "answer_runs_policy_version_fkey",
+          "tableFrom": "answer_runs",
+          "columnsFrom": [
+            "policy_version"
+          ],
+          "tableTo": "policy_versions",
+          "schemaTo": "research",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "answer_runs_family_child_key_unique": {
+          "name": "answer_runs_family_child_key_unique",
+          "columns": [
+            "family_id",
+            "child_id",
+            "idempotency_key"
+          ],
+          "nullsNotDistinct": false
+        },
+        "answer_runs_scope_unique": {
+          "name": "answer_runs_scope_unique",
+          "columns": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "probyu_family_runtime"
+          ],
+          "using": "family_id::text = current_setting('app.family_id', true)",
+          "withCheck": "family_id::text = current_setting('app.family_id', true)"
+        }
+      },
+      "checkConstraints": {
+        "answer_runs_hashes_check": {
+          "name": "answer_runs_hashes_check",
+          "value": "\n      request_hash ~ '^[a-f0-9]{64}$'\n      AND (input_hash IS NULL OR input_hash ~ '^[a-f0-9]{64}$')\n    "
+        },
+        "answer_runs_epoch_check": {
+          "name": "answer_runs_epoch_check",
+          "value": "\n      access_epoch > 0 AND child_access_epoch > 0 AND session_privilege_epoch > 0\n      AND kill_epoch > 0 AND fence >= 0\n    "
+        },
+        "answer_runs_status_check": {
+          "name": "answer_runs_status_check",
+          "value": "status = ANY (ARRAY[\n      'RECEIVED','INPUT_APPROVED','QUEUED','GENERATING','OUTPUT_VALIDATING',\n      'APPROVED','DELIVERING','COMPLETED','DENIED','FAILED_SAFE','CANCELLED'\n    ])"
+        },
+        "answer_runs_safety_action_check": {
+          "name": "answer_runs_safety_action_check",
+          "value": "\n      safety_action IS NULL OR safety_action = ANY (ARRAY[\n        'ALLOW','SAFE_TRANSFORM','PARENT_GATE','SAFETY_RESPONSE','BLOCK'\n      ])\n    "
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "research.approved_answer_artifacts": {
+      "name": "approved_answer_artifacts",
+      "schema": "research",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer_run_id": {
+          "name": "answer_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ciphertext": {
+          "name": "ciphertext",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "schema_version": {
+          "name": "schema_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "output_decision": {
+          "name": "output_decision",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "age_band": {
+          "name": "age_band",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_version": {
+          "name": "policy_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "approved_at": {
+          "name": "approved_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "approved_answer_artifacts_run_scope_fkey": {
+          "name": "approved_answer_artifacts_run_scope_fkey",
+          "tableFrom": "approved_answer_artifacts",
+          "columnsFrom": [
+            "family_id",
+            "child_id",
+            "answer_run_id"
+          ],
+          "tableTo": "answer_runs",
+          "schemaTo": "research",
+          "columnsTo": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "approved_answer_artifacts_policy_fkey": {
+          "name": "approved_answer_artifacts_policy_fkey",
+          "tableFrom": "approved_answer_artifacts",
+          "columnsFrom": [
+            "policy_version"
+          ],
+          "tableTo": "policy_versions",
+          "schemaTo": "research",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "approved_answer_artifacts_answer_run_unique": {
+          "name": "approved_answer_artifacts_answer_run_unique",
+          "columns": [
+            "answer_run_id"
+          ],
+          "nullsNotDistinct": false
+        },
+        "approved_answer_artifacts_scope_unique": {
+          "name": "approved_answer_artifacts_scope_unique",
+          "columns": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "probyu_family_runtime"
+          ],
+          "using": "family_id::text = current_setting('app.family_id', true)",
+          "withCheck": "family_id::text = current_setting('app.family_id', true)"
+        }
+      },
+      "checkConstraints": {
+        "approved_answer_artifacts_content_hash_check": {
+          "name": "approved_answer_artifacts_content_hash_check",
+          "value": "content_hash ~ '^[a-f0-9]{64}$'"
+        },
+        "approved_answer_artifacts_decision_check": {
+          "name": "approved_answer_artifacts_decision_check",
+          "value": "output_decision = 'ALLOW'"
+        },
+        "approved_answer_artifacts_age_check": {
+          "name": "approved_answer_artifacts_age_check",
+          "value": "age_band = ANY (ARRAY['8_10','11_12','13_14'])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "research.challenge_offers": {
+      "name": "challenge_offers",
+      "schema": "research",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer_run_id": {
+          "name": "answer_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "challenge_version_id": {
+          "name": "challenge_version_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "challenge_offers_run_scope_fkey": {
+          "name": "challenge_offers_run_scope_fkey",
+          "tableFrom": "challenge_offers",
+          "columnsFrom": [
+            "family_id",
+            "child_id",
+            "answer_run_id"
+          ],
+          "tableTo": "answer_runs",
+          "schemaTo": "research",
+          "columnsTo": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "challenge_offers_version_fkey": {
+          "name": "challenge_offers_version_fkey",
+          "tableFrom": "challenge_offers",
+          "columnsFrom": [
+            "challenge_version_id"
+          ],
+          "tableTo": "challenge_versions",
+          "schemaTo": "research",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "challenge_offers_answer_run_unique": {
+          "name": "challenge_offers_answer_run_unique",
+          "columns": [
+            "answer_run_id"
+          ],
+          "nullsNotDistinct": false
+        },
+        "challenge_offers_scope_unique": {
+          "name": "challenge_offers_scope_unique",
+          "columns": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "probyu_family_runtime"
+          ],
+          "using": "family_id::text = current_setting('app.family_id', true)",
+          "withCheck": "family_id::text = current_setting('app.family_id', true)"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "research.challenge_runs": {
+      "name": "challenge_runs",
+      "schema": "research",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer_run_id": {
+          "name": "answer_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "offer_id": {
+          "name": "offer_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "challenge_version_id": {
+          "name": "challenge_version_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "row_version": {
+          "name": "row_version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "current_step": {
+          "name": "current_step",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "paused_at": {
+          "name": "paused_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "challenge_runs_answer_scope_fkey": {
+          "name": "challenge_runs_answer_scope_fkey",
+          "tableFrom": "challenge_runs",
+          "columnsFrom": [
+            "family_id",
+            "child_id",
+            "answer_run_id"
+          ],
+          "tableTo": "answer_runs",
+          "schemaTo": "research",
+          "columnsTo": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "challenge_runs_offer_scope_fkey": {
+          "name": "challenge_runs_offer_scope_fkey",
+          "tableFrom": "challenge_runs",
+          "columnsFrom": [
+            "family_id",
+            "child_id",
+            "offer_id"
+          ],
+          "tableTo": "challenge_offers",
+          "schemaTo": "research",
+          "columnsTo": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        },
+        "challenge_runs_version_fkey": {
+          "name": "challenge_runs_version_fkey",
+          "tableFrom": "challenge_runs",
+          "columnsFrom": [
+            "challenge_version_id"
+          ],
+          "tableTo": "challenge_versions",
+          "schemaTo": "research",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "challenge_runs_offer_unique": {
+          "name": "challenge_runs_offer_unique",
+          "columns": [
+            "offer_id"
+          ],
+          "nullsNotDistinct": false
+        },
+        "challenge_runs_scope_unique": {
+          "name": "challenge_runs_scope_unique",
+          "columns": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "probyu_family_runtime"
+          ],
+          "using": "family_id::text = current_setting('app.family_id', true)",
+          "withCheck": "family_id::text = current_setting('app.family_id', true)"
+        }
+      },
+      "checkConstraints": {
+        "challenge_runs_step_check": {
+          "name": "challenge_runs_step_check",
+          "value": "current_step >= 0 AND row_version >= 0"
+        },
+        "challenge_runs_expiry_check": {
+          "name": "challenge_runs_expiry_check",
+          "value": "expires_at > created_at"
+        },
+        "challenge_runs_status_check": {
+          "name": "challenge_runs_status_check",
+          "value": "status = ANY (ARRAY['IN_PROGRESS','DECLINED','ABANDONED','EXPIRED','BLOCKED_BY_POLICY'])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "research.challenge_versions": {
+      "name": "challenge_versions",
+      "schema": "research",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kind": {
+          "name": "kind",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "goal": {
+          "name": "goal",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "duration_minutes": {
+          "name": "duration_minutes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "resume_window_minutes": {
+          "name": "resume_window_minutes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "materials": {
+          "name": "materials",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "steps": {
+          "name": "steps",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "age_bands": {
+          "name": "age_bands",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "risk_class": {
+          "name": "risk_class",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "supervision_requirement": {
+          "name": "supervision_requirement",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "origin": {
+          "name": "origin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "distribution_scope": {
+          "name": "distribution_scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "policy_version": {
+          "name": "policy_version",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "content_hash": {
+          "name": "content_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reviewed_by": {
+          "name": "reviewed_by",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "published_at": {
+          "name": "published_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "challenge_versions_policy_fkey": {
+          "name": "challenge_versions_policy_fkey",
+          "tableFrom": "challenge_versions",
+          "columnsFrom": [
+            "policy_version"
+          ],
+          "tableTo": "policy_versions",
+          "schemaTo": "research",
+          "columnsTo": [
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "challenge_versions_key_version_unique": {
+          "name": "challenge_versions_key_version_unique",
+          "columns": [
+            "key",
+            "version"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "challenge_versions_version_check": {
+          "name": "challenge_versions_version_check",
+          "value": "version > 0"
+        },
+        "challenge_versions_hash_check": {
+          "name": "challenge_versions_hash_check",
+          "value": "content_hash ~ '^[a-f0-9]{64}$'"
+        },
+        "challenge_versions_kind_check": {
+          "name": "challenge_versions_kind_check",
+          "value": "kind = ANY (ARRAY['MICRO_PROBE','EXPERIENCE','PROJECT'])"
+        },
+        "challenge_versions_curated_check": {
+          "name": "challenge_versions_curated_check",
+          "value": "origin='CURATED' AND distribution_scope='CATALOG' AND status='PUBLISHED' AND risk_class='MINIMAL_RISK' AND supervision_requirement='NONE'"
+        },
+        "challenge_versions_duration_check": {
+          "name": "challenge_versions_duration_check",
+          "value": "duration_minutes BETWEEN 1 AND 20"
+        },
+        "challenge_versions_resume_window_check": {
+          "name": "challenge_versions_resume_window_check",
+          "value": "(version = 1 AND resume_window_minutes IS NULL) OR (version > 1 AND resume_window_minutes BETWEEN duration_minutes AND 10080)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "research.command_receipts": {
+      "name": "command_receipts",
+      "schema": "research",
+      "columns": {
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "command_key": {
+          "name": "command_key",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "action_hash": {
+          "name": "action_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "result": {
+          "name": "result",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "research_command_receipts_child_scope_fkey": {
+          "name": "research_command_receipts_child_scope_fkey",
+          "tableFrom": "command_receipts",
+          "columnsFrom": [
+            "family_id",
+            "child_id"
+          ],
+          "tableTo": "children",
+          "schemaTo": "family",
+          "columnsTo": [
+            "family_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "command_receipts_family_id_child_id_command_key_pk": {
+          "name": "command_receipts_family_id_child_id_command_key_pk",
+          "columns": [
+            "family_id",
+            "child_id",
+            "command_key"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "probyu_family_runtime"
+          ],
+          "using": "family_id::text = current_setting('app.family_id', true)",
+          "withCheck": "family_id::text = current_setting('app.family_id', true)"
+        }
+      },
+      "checkConstraints": {
+        "research_command_receipts_hash_check": {
+          "name": "research_command_receipts_hash_check",
+          "value": "action_hash ~ '^[a-f0-9]{64}$'"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "research.outbox": {
+      "name": "outbox",
+      "schema": "research",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "family_id": {
+          "name": "family_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "child_id": {
+          "name": "child_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "answer_run_id": {
+          "name": "answer_run_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "event_type": {
+          "name": "event_type",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'PENDING'"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "research_outbox_answer_scope_fkey": {
+          "name": "research_outbox_answer_scope_fkey",
+          "tableFrom": "outbox",
+          "columnsFrom": [
+            "family_id",
+            "child_id",
+            "answer_run_id"
+          ],
+          "tableTo": "answer_runs",
+          "schemaTo": "research",
+          "columnsTo": [
+            "family_id",
+            "child_id",
+            "id"
+          ],
+          "onUpdate": "no action",
+          "onDelete": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "research_outbox_answer_event_unique": {
+          "name": "research_outbox_answer_event_unique",
+          "columns": [
+            "answer_run_id",
+            "event_type"
+          ],
+          "nullsNotDistinct": false
+        }
+      },
+      "policies": {
+        "tenant": {
+          "name": "tenant",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "probyu_family_runtime"
+          ],
+          "using": "family_id::text = current_setting('app.family_id', true)",
+          "withCheck": "family_id::text = current_setting('app.family_id', true)"
+        }
+      },
+      "checkConstraints": {
+        "research_outbox_state_check": {
+          "name": "research_outbox_state_check",
+          "value": "state = ANY (ARRAY['PENDING','PROCESSING','PROCESSED','DEAD'])"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "research.policy_versions": {
+      "name": "policy_versions",
+      "schema": "research",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "kill_epoch": {
+          "name": "kill_epoch",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "effective_at": {
+          "name": "effective_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {
+    "content": "content",
+    "family": "family",
+    "identity": "identity",
+    "ops": "ops",
+    "research": "research"
+  },
+  "views": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

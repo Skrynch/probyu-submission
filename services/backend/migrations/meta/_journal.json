@@ -43,6 +43,41 @@
       "when": 1789389491467,
       "tag": "0005_goofy_wild_pack",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789406113963,
+      "tag": "0006_sleepy_centennial",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789411666223,
+      "tag": "0007_wise_whiplash",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789445681247,
+      "tag": "0008_harsh_dorian_gray",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789466872972,
+      "tag": "0009_lock_research_policy",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789469529071,
+      "tag": "0010_fair_research_policy_pause",
+      "breakpoints": true
     }
   ]
 }

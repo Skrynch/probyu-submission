@@ -10,9 +10,19 @@ events:
     owner: answer
   - name: explanation_delivery_completed
     owner: answer
+  - name: answer_cancelled
+    owner: answer
   - name: probe_offered
     owner: probe
   - name: probe_started
+    owner: probe
+  - name: probe_step_completed
+    owner: probe
+  - name: probe_paused
+    owner: probe
+  - name: probe_resumed
+    owner: probe
+  - name: probe_cancelled
     owner: probe
   - name: result_accepted
     owner: probe

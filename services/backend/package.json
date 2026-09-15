@@ -15,6 +15,7 @@
     "start:worker": "node dist/entrypoints/worker.js",
     "test": "vitest run --exclude '**/*.integration.test.ts'",
     "test:integration": "vitest run src/db/demo.integration.test.ts",
+    "test:m3": "vitest run src/db/research.integration.test.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

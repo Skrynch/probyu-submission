@@ -7,7 +7,7 @@ const API_PORT = 3100;
 // Внешняя сеть и реальный AI не нужны; DATABASE_URL не передаётся.
 export default defineConfig({
   testDir: './e2e',
-  testIgnore: 'm2-family.spec.ts',
+  testIgnore: ['m2-family.spec.ts', 'm3-research.spec.ts'],
   fullyParallel: false,
   workers: 1,
   forbidOnly: true,

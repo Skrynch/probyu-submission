@@ -12,7 +12,9 @@
     "vite.config.ts",
     "playwright.config.ts",
     "playwright.m2.config.ts",
+    "playwright.m3.config.ts",
     "e2e",
-    "../../services/backend/src/db/family-test-support.ts"
+    "../../services/backend/src/db/family-test-support.ts",
+    "../../services/backend/src/db/research-test-support.ts"
   ]
 }

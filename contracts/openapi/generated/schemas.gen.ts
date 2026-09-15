@@ -733,3 +733,539 @@ export const FamilyErrorSchema = {
         'code'
     ]
 } as const;
+
+export const ResearchQuestionRequestSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'question',
+        'idempotencyKey'
+    ],
+    properties: {
+        question: {
+            type: 'string',
+            minLength: 2,
+            maxLength: 500
+        },
+        idempotencyKey: {
+            type: 'string',
+            format: 'uuid'
+        }
+    }
+} as const;
+
+export const ResearchIdempotentCommandSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'idempotencyKey'
+    ],
+    properties: {
+        idempotencyKey: {
+            type: 'string',
+            format: 'uuid'
+        }
+    }
+} as const;
+
+export const ResearchOfferCommandSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'action',
+        'idempotencyKey'
+    ],
+    properties: {
+        action: {
+            type: 'string',
+            enum: [
+                'START',
+                'DECLINE'
+            ]
+        },
+        idempotencyKey: {
+            type: 'string',
+            format: 'uuid'
+        }
+    }
+} as const;
+
+export const ResearchChallengeCommandSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'action',
+        'idempotencyKey',
+        'expectedVersion'
+    ],
+    properties: {
+        action: {
+            type: 'string',
+            enum: [
+                'NEXT',
+                'PAUSE',
+                'RESUME',
+                'CANCEL'
+            ]
+        },
+        idempotencyKey: {
+            type: 'string',
+            format: 'uuid'
+        },
+        expectedVersion: {
+            type: 'integer',
+            minimum: 0
+        }
+    }
+} as const;
+
+export const ResearchChallengeSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'offerId',
+        'versionId',
+        'version',
+        'kind',
+        'title',
+        'goal',
+        'durationMinutes',
+        'materials',
+        'steps',
+        'ageBands',
+        'riskClass',
+        'supervisionRequirement',
+        'contentHash',
+        'expiresAt'
+    ],
+    properties: {
+        offerId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        versionId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        version: {
+            type: 'integer',
+            minimum: 1
+        },
+        kind: {
+            type: 'string',
+            enum: [
+                'MICRO_PROBE',
+                'EXPERIENCE',
+                'PROJECT'
+            ]
+        },
+        title: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 120
+        },
+        goal: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 300
+        },
+        durationMinutes: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 20
+        },
+        materials: {
+            type: 'array',
+            minItems: 1,
+            maxItems: 6,
+            items: {
+                type: 'string',
+                maxLength: 160
+            }
+        },
+        steps: {
+            type: 'array',
+            minItems: 1,
+            maxItems: 8,
+            items: {
+                type: 'string',
+                maxLength: 320
+            }
+        },
+        ageBands: {
+            type: 'array',
+            minItems: 1,
+            maxItems: 3,
+            uniqueItems: true,
+            items: {
+                type: 'string',
+                enum: [
+                    '8_10',
+                    '11_12',
+                    '13_14'
+                ]
+            }
+        },
+        riskClass: {
+            type: 'string',
+            const: 'MINIMAL_RISK'
+        },
+        supervisionRequirement: {
+            type: 'string',
+            const: 'NONE'
+        },
+        contentHash: {
+            type: 'string',
+            pattern: '^[a-f0-9]{64}$'
+        },
+        expiresAt: {
+            type: 'string',
+            format: 'date-time'
+        }
+    }
+} as const;
+
+export const ApprovedResearchAnswerSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'explanation',
+        'roleNotice',
+        'challenge'
+    ],
+    properties: {
+        explanation: {
+            type: 'array',
+            minItems: 1,
+            maxItems: 4,
+            items: {
+                type: 'string',
+                maxLength: 500
+            }
+        },
+        roleNotice: {
+            type: 'string',
+            const: 'Это учебный ответ системы: он может ошибаться.'
+        },
+        challenge: {
+            $ref: '#/components/schemas/ResearchChallenge'
+        }
+    }
+} as const;
+
+export const ResearchChallengeSummarySchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'versionId',
+        'version',
+        'kind',
+        'title',
+        'goal',
+        'durationMinutes',
+        'ageBands',
+        'riskClass',
+        'supervisionRequirement',
+        'contentHash'
+    ],
+    properties: {
+        versionId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        version: {
+            type: 'integer',
+            minimum: 1
+        },
+        kind: {
+            type: 'string',
+            enum: [
+                'MICRO_PROBE',
+                'EXPERIENCE',
+                'PROJECT'
+            ]
+        },
+        title: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 120
+        },
+        goal: {
+            type: 'string',
+            minLength: 1,
+            maxLength: 300
+        },
+        durationMinutes: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 20
+        },
+        ageBands: {
+            type: 'array',
+            minItems: 1,
+            maxItems: 3,
+            uniqueItems: true,
+            items: {
+                type: 'string',
+                enum: [
+                    '8_10',
+                    '11_12',
+                    '13_14'
+                ]
+            }
+        },
+        riskClass: {
+            type: 'string',
+            const: 'MINIMAL_RISK'
+        },
+        supervisionRequirement: {
+            type: 'string',
+            const: 'NONE'
+        },
+        contentHash: {
+            type: 'string',
+            pattern: '^[a-f0-9]{64}$'
+        }
+    }
+} as const;
+
+export const ResearchAnswerRunSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'id',
+        'status',
+        'createdAt',
+        'updatedAt'
+    ],
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
+        status: {
+            type: 'string',
+            enum: [
+                'RECEIVED',
+                'INPUT_APPROVED',
+                'QUEUED',
+                'GENERATING',
+                'OUTPUT_VALIDATING',
+                'APPROVED',
+                'DELIVERING',
+                'COMPLETED',
+                'DENIED',
+                'FAILED_SAFE',
+                'CANCELLED'
+            ]
+        },
+        createdAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        updatedAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        failureCode: {
+            type: 'string',
+            enum: [
+                'INPUT_BLOCKED',
+                'INPUT_TOO_LONG',
+                'INPUT_LOST',
+                'OUTPUT_REJECTED',
+                'GATE_TIMEOUT',
+                'PROVIDER_OUTCOME_UNKNOWN',
+                'ACCESS_REVOKED',
+                'KILLED',
+                'CANCELLED'
+            ]
+        },
+        answer: {
+            $ref: '#/components/schemas/ApprovedResearchAnswer'
+        },
+        challengeRun: {
+            $ref: '#/components/schemas/ResearchChallengeRun'
+        }
+    }
+} as const;
+
+export const ResearchCurrentAnswerSchema = {
+    type: 'object',
+    additionalProperties: false,
+    properties: {
+        answer: {
+            $ref: '#/components/schemas/ResearchAnswerRun'
+        }
+    }
+} as const;
+
+export const ResearchActiveChallengeRunSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'id',
+        'offerId',
+        'answerRunId',
+        'status',
+        'expiresAt',
+        'rowVersion',
+        'currentStep',
+        'totalSteps',
+        'paused',
+        'instructionsComplete',
+        'challenge'
+    ],
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
+        offerId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        answerRunId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        status: {
+            type: 'string',
+            const: 'IN_PROGRESS'
+        },
+        expiresAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        rowVersion: {
+            type: 'integer',
+            minimum: 0
+        },
+        currentStep: {
+            type: 'integer',
+            minimum: 0,
+            maximum: 8
+        },
+        totalSteps: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 8
+        },
+        paused: {
+            type: 'boolean'
+        },
+        instructionsComplete: {
+            type: 'boolean'
+        },
+        step: {
+            type: 'string',
+            maxLength: 320
+        },
+        challenge: {
+            $ref: '#/components/schemas/ResearchChallengeSummary'
+        }
+    }
+} as const;
+
+export const ResearchTerminalChallengeRunSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'id',
+        'offerId',
+        'answerRunId',
+        'status',
+        'expiresAt',
+        'rowVersion',
+        'currentStep',
+        'totalSteps',
+        'paused',
+        'instructionsComplete'
+    ],
+    properties: {
+        id: {
+            type: 'string',
+            format: 'uuid'
+        },
+        offerId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        answerRunId: {
+            type: 'string',
+            format: 'uuid'
+        },
+        status: {
+            type: 'string',
+            enum: [
+                'DECLINED',
+                'ABANDONED',
+                'EXPIRED',
+                'BLOCKED_BY_POLICY'
+            ]
+        },
+        expiresAt: {
+            type: 'string',
+            format: 'date-time'
+        },
+        rowVersion: {
+            type: 'integer',
+            minimum: 0
+        },
+        currentStep: {
+            type: 'integer',
+            minimum: 0,
+            maximum: 8
+        },
+        totalSteps: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 8
+        },
+        paused: {
+            type: 'boolean'
+        },
+        instructionsComplete: {
+            type: 'boolean'
+        }
+    }
+} as const;
+
+export const ResearchChallengeRunSchema = {
+    oneOf: [
+        {
+            $ref: '#/components/schemas/ResearchActiveChallengeRun'
+        },
+        {
+            $ref: '#/components/schemas/ResearchTerminalChallengeRun'
+        }
+    ]
+} as const;
+
+export const ResearchErrorSchema = {
+    type: 'object',
+    additionalProperties: false,
+    required: [
+        'code'
+    ],
+    properties: {
+        code: {
+            type: 'string',
+            enum: [
+                'UNAUTHENTICATED',
+                'FORBIDDEN',
+                'INVALID_REQUEST',
+                'CONFLICT',
+                'NOT_FOUND',
+                'OFFER_EXPIRED',
+                'RATE_LIMITED',
+                'UNAVAILABLE'
+            ]
+        },
+        retryAfterSeconds: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 60
+        }
+    }
+} as const;

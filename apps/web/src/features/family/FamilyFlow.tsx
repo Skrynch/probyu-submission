@@ -534,7 +534,7 @@ export function FamilyFlow() {
                     </h1>
                     <p>
                       {child?.textAllowed
-                        ? 'Всё начинается с любопытства. Пока можно пройти готовый пример. Свободные вопросы появятся на следующем этапе.'
+                        ? 'Всё начинается с любопытства. Теперь можно задать вопрос и пройти безопасную учебную пробу.'
                         : 'Взрослому нужно проверить разрешения или снять паузу.'}
                     </p>
                     <p>
@@ -542,7 +542,14 @@ export function FamilyFlow() {
                       момент.
                     </p>
                     <div className="family-actions">
-                      <Button asChild>
+                      {child?.textAllowed ? (
+                        <Button asChild>
+                          <Link to="/research">Начать исследование</Link>
+                        </Button>
+                      ) : (
+                        <Button disabled>Начать исследование</Button>
+                      )}
+                      <Button asChild variant="outline">
                         <Link to="/">Открыть готовый пример</Link>
                       </Button>
                       <Button

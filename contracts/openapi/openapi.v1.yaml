@@ -10,6 +10,7 @@ tags:
   - name: system
   - name: demo
   - name: family
+  - name: research
 paths:
   /v1/health:
     get:
@@ -607,7 +608,234 @@ paths:
           in: header
           required: true
           schema: *a1
+  /v1/research/questions:
+    post:
+      operationId: createResearchQuestion
+      tags: [research]
+      summary: Accept one synthetic child question as an idempotent AnswerRun
+      security:
+        - sameOrigin: []
+          familySession: []
+      parameters:
+        - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResearchQuestionRequest'
+      responses:
+        '202':
+          description: Sanitized input and one logical run were durably accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchAnswerRun'
+        '200':
+          description: Existing idempotent run or a new terminal safe input rejection
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchAnswerRun'
+        '400': { $ref: '#/components/responses/ResearchFailure' }
+        '401': { $ref: '#/components/responses/ResearchFailure' }
+        '403': { $ref: '#/components/responses/ResearchFailure' }
+        '409': { $ref: '#/components/responses/ResearchFailure' }
+        '429': { $ref: '#/components/responses/ResearchFailure' }
+        '503': { $ref: '#/components/responses/ResearchFailure' }
+  /v1/research/answers/current:
+    get:
+      operationId: getCurrentResearchAnswer
+      tags: [research]
+      summary: Recover the current resumable AnswerRun for the authorized child
+      security:
+        - familySession: []
+      responses:
+        '200':
+          description: Current resumable run, or an empty object when no run is resumable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchCurrentAnswer'
+        '401': { $ref: '#/components/responses/ResearchFailure' }
+        '403': { $ref: '#/components/responses/ResearchFailure' }
+        '503': { $ref: '#/components/responses/ResearchFailure' }
+  /v1/research/answers/{answerRunId}:
+    get:
+      operationId: getResearchAnswer
+      tags: [research]
+      summary: Return the currently authorized snapshot of one AnswerRun
+      security:
+        - familySession: []
+      parameters:
+        - $ref: '#/components/parameters/AnswerRunId'
+      responses:
+        '200':
+          description: Current run snapshot; approved content appears only after all gates
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchAnswerRun'
+        '400': { $ref: '#/components/responses/ResearchFailure' }
+        '401': { $ref: '#/components/responses/ResearchFailure' }
+        '403': { $ref: '#/components/responses/ResearchFailure' }
+        '404': { $ref: '#/components/responses/ResearchFailure' }
+        '503': { $ref: '#/components/responses/ResearchFailure' }
+  /v1/research/answers/{answerRunId}/events:
+    get:
+      operationId: streamResearchAnswer
+      tags: [research]
+      summary: Replay authorized events from an approved artifact only
+      security:
+        - familySession: []
+      parameters:
+        - $ref: '#/components/parameters/AnswerRunId'
+        - name: cursor
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 2147483647
+        - name: Last-Event-ID
+          in: header
+          required: false
+          schema:
+            type: string
+            pattern: ^[0-9]{1,10}$
+      responses:
+        '200':
+          description: SSE event stream; each data value is a ResearchAnswerRun JSON snapshot
+          content:
+            text/event-stream:
+              schema:
+                type: string
+        '400': { $ref: '#/components/responses/ResearchFailure' }
+        '401': { $ref: '#/components/responses/ResearchFailure' }
+        '403': { $ref: '#/components/responses/ResearchFailure' }
+        '404': { $ref: '#/components/responses/ResearchFailure' }
+        '503': { $ref: '#/components/responses/ResearchFailure' }
+  /v1/research/answers/{answerRunId}/cancel:
+    post:
+      operationId: cancelResearchAnswer
+      tags: [research]
+      summary: Idempotently cancel an existing AnswerRun
+      security:
+        - sameOrigin: []
+          familySession: []
+      parameters:
+        - $ref: '#/components/parameters/AnswerRunId'
+        - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResearchIdempotentCommand'
+      responses:
+        '200':
+          description: Current terminal or cancelled snapshot
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchAnswerRun'
+        '400': { $ref: '#/components/responses/ResearchFailure' }
+        '401': { $ref: '#/components/responses/ResearchFailure' }
+        '403': { $ref: '#/components/responses/ResearchFailure' }
+        '404': { $ref: '#/components/responses/ResearchFailure' }
+        '409': { $ref: '#/components/responses/ResearchFailure' }
+        '503': { $ref: '#/components/responses/ResearchFailure' }
+  /v1/research/offers/{offerId}/commands:
+    post:
+      operationId: executeResearchOfferCommand
+      tags: [research]
+      summary: Start or decline an immutable curated challenge offer
+      security:
+        - sameOrigin: []
+          familySession: []
+      parameters:
+        - $ref: '#/components/parameters/OfferId'
+        - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResearchOfferCommand'
+      responses:
+        '200':
+          description: Current challenge run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchChallengeRun'
+        '400': { $ref: '#/components/responses/ResearchFailure' }
+        '401': { $ref: '#/components/responses/ResearchFailure' }
+        '403': { $ref: '#/components/responses/ResearchFailure' }
+        '404': { $ref: '#/components/responses/ResearchFailure' }
+        '409': { $ref: '#/components/responses/ResearchFailure' }
+        '410': { $ref: '#/components/responses/ResearchFailure' }
+        '503': { $ref: '#/components/responses/ResearchFailure' }
+  /v1/research/challenges/{challengeRunId}/commands:
+    post:
+      operationId: executeResearchChallengeCommand
+      tags: [research]
+      summary: Advance, pause, resume or stop one server-owned challenge run
+      security:
+        - sameOrigin: []
+          familySession: []
+      parameters:
+        - $ref: '#/components/parameters/ChallengeRunId'
+        - $ref: '#/components/parameters/CsrfToken'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResearchChallengeCommand'
+      responses:
+        '200':
+          description: Current challenge run
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResearchChallengeRun'
+        '400': { $ref: '#/components/responses/ResearchFailure' }
+        '401': { $ref: '#/components/responses/ResearchFailure' }
+        '403': { $ref: '#/components/responses/ResearchFailure' }
+        '404': { $ref: '#/components/responses/ResearchFailure' }
+        '409': { $ref: '#/components/responses/ResearchFailure' }
+        '503': { $ref: '#/components/responses/ResearchFailure' }
 components:
+  parameters:
+    CsrfToken:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema:
+        type: string
+    AnswerRunId:
+      name: answerRunId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    OfferId:
+      name: offerId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+    ChallengeRunId:
+      name: challengeRunId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+  responses:
+    ResearchFailure:
+      description: Safe research failure without child content
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ResearchError'
   schemas:
     HealthResponse:
       type: object
@@ -1093,6 +1321,287 @@ components:
           maximum: 900
       required:
         - code
+    ResearchQuestionRequest:
+      type: object
+      additionalProperties: false
+      required: [question, idempotencyKey]
+      properties:
+        question:
+          type: string
+          minLength: 2
+          maxLength: 500
+        idempotencyKey:
+          type: string
+          format: uuid
+    ResearchIdempotentCommand:
+      type: object
+      additionalProperties: false
+      required: [idempotencyKey]
+      properties:
+        idempotencyKey:
+          type: string
+          format: uuid
+    ResearchOfferCommand:
+      type: object
+      additionalProperties: false
+      required: [action, idempotencyKey]
+      properties:
+        action:
+          type: string
+          enum: [START, DECLINE]
+        idempotencyKey:
+          type: string
+          format: uuid
+    ResearchChallengeCommand:
+      type: object
+      additionalProperties: false
+      required: [action, idempotencyKey, expectedVersion]
+      properties:
+        action:
+          type: string
+          enum: [NEXT, PAUSE, RESUME, CANCEL]
+        idempotencyKey:
+          type: string
+          format: uuid
+        expectedVersion:
+          type: integer
+          minimum: 0
+    ResearchChallenge:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          offerId,
+          versionId,
+          version,
+          kind,
+          title,
+          goal,
+          durationMinutes,
+          materials,
+          steps,
+          ageBands,
+          riskClass,
+          supervisionRequirement,
+          contentHash,
+          expiresAt,
+        ]
+      properties:
+        offerId: { type: string, format: uuid }
+        versionId: { type: string, format: uuid }
+        version: { type: integer, minimum: 1 }
+        kind: { type: string, enum: [MICRO_PROBE, EXPERIENCE, PROJECT] }
+        title: { type: string, minLength: 1, maxLength: 120 }
+        goal: { type: string, minLength: 1, maxLength: 300 }
+        durationMinutes: { type: integer, minimum: 1, maximum: 20 }
+        materials:
+          type: array
+          minItems: 1
+          maxItems: 6
+          items: { type: string, maxLength: 160 }
+        steps:
+          type: array
+          minItems: 1
+          maxItems: 8
+          items: { type: string, maxLength: 320 }
+        ageBands:
+          type: array
+          minItems: 1
+          maxItems: 3
+          uniqueItems: true
+          items: { type: string, enum: [8_10, 11_12, 13_14] }
+        riskClass:
+          type: string
+          const: MINIMAL_RISK
+        supervisionRequirement:
+          type: string
+          const: NONE
+        contentHash: { type: string, pattern: '^[a-f0-9]{64}$' }
+        expiresAt: { type: string, format: date-time }
+    ApprovedResearchAnswer:
+      type: object
+      additionalProperties: false
+      required: [explanation, roleNotice, challenge]
+      properties:
+        explanation:
+          type: array
+          minItems: 1
+          maxItems: 4
+          items: { type: string, maxLength: 500 }
+        roleNotice:
+          type: string
+          const: 'Это учебный ответ системы: он может ошибаться.'
+        challenge:
+          $ref: '#/components/schemas/ResearchChallenge'
+    ResearchChallengeSummary:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          versionId,
+          version,
+          kind,
+          title,
+          goal,
+          durationMinutes,
+          ageBands,
+          riskClass,
+          supervisionRequirement,
+          contentHash,
+        ]
+      properties:
+        versionId: { type: string, format: uuid }
+        version: { type: integer, minimum: 1 }
+        kind: { type: string, enum: [MICRO_PROBE, EXPERIENCE, PROJECT] }
+        title: { type: string, minLength: 1, maxLength: 120 }
+        goal: { type: string, minLength: 1, maxLength: 300 }
+        durationMinutes: { type: integer, minimum: 1, maximum: 20 }
+        ageBands:
+          type: array
+          minItems: 1
+          maxItems: 3
+          uniqueItems: true
+          items: { type: string, enum: [8_10, 11_12, 13_14] }
+        riskClass:
+          type: string
+          const: MINIMAL_RISK
+        supervisionRequirement:
+          type: string
+          const: NONE
+        contentHash: { type: string, pattern: '^[a-f0-9]{64}$' }
+    ResearchAnswerRun:
+      type: object
+      additionalProperties: false
+      required: [id, status, createdAt, updatedAt]
+      properties:
+        id: { type: string, format: uuid }
+        status:
+          type: string
+          enum:
+            [
+              RECEIVED,
+              INPUT_APPROVED,
+              QUEUED,
+              GENERATING,
+              OUTPUT_VALIDATING,
+              APPROVED,
+              DELIVERING,
+              COMPLETED,
+              DENIED,
+              FAILED_SAFE,
+              CANCELLED,
+            ]
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+        failureCode:
+          type: string
+          enum:
+            [
+              INPUT_BLOCKED,
+              INPUT_TOO_LONG,
+              INPUT_LOST,
+              OUTPUT_REJECTED,
+              GATE_TIMEOUT,
+              PROVIDER_OUTCOME_UNKNOWN,
+              ACCESS_REVOKED,
+              KILLED,
+              CANCELLED,
+            ]
+        answer:
+          $ref: '#/components/schemas/ApprovedResearchAnswer'
+        challengeRun:
+          $ref: '#/components/schemas/ResearchChallengeRun'
+    ResearchCurrentAnswer:
+      type: object
+      additionalProperties: false
+      properties:
+        answer:
+          $ref: '#/components/schemas/ResearchAnswerRun'
+    ResearchActiveChallengeRun:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          id,
+          offerId,
+          answerRunId,
+          status,
+          expiresAt,
+          rowVersion,
+          currentStep,
+          totalSteps,
+          paused,
+          instructionsComplete,
+          challenge,
+        ]
+      properties:
+        id: { type: string, format: uuid }
+        offerId: { type: string, format: uuid }
+        answerRunId: { type: string, format: uuid }
+        status:
+          type: string
+          const: IN_PROGRESS
+        expiresAt: { type: string, format: date-time }
+        rowVersion: { type: integer, minimum: 0 }
+        currentStep: { type: integer, minimum: 0, maximum: 8 }
+        totalSteps: { type: integer, minimum: 1, maximum: 8 }
+        paused: { type: boolean }
+        instructionsComplete: { type: boolean }
+        step: { type: string, maxLength: 320 }
+        challenge:
+          $ref: '#/components/schemas/ResearchChallengeSummary'
+    ResearchTerminalChallengeRun:
+      type: object
+      additionalProperties: false
+      required:
+        [
+          id,
+          offerId,
+          answerRunId,
+          status,
+          expiresAt,
+          rowVersion,
+          currentStep,
+          totalSteps,
+          paused,
+          instructionsComplete,
+        ]
+      properties:
+        id: { type: string, format: uuid }
+        offerId: { type: string, format: uuid }
+        answerRunId: { type: string, format: uuid }
+        status:
+          type: string
+          enum: [DECLINED, ABANDONED, EXPIRED, BLOCKED_BY_POLICY]
+        expiresAt: { type: string, format: date-time }
+        rowVersion: { type: integer, minimum: 0 }
+        currentStep: { type: integer, minimum: 0, maximum: 8 }
+        totalSteps: { type: integer, minimum: 1, maximum: 8 }
+        paused: { type: boolean }
+        instructionsComplete: { type: boolean }
+    ResearchChallengeRun:
+      oneOf:
+        - $ref: '#/components/schemas/ResearchActiveChallengeRun'
+        - $ref: '#/components/schemas/ResearchTerminalChallengeRun'
+    ResearchError:
+      type: object
+      additionalProperties: false
+      required: [code]
+      properties:
+        code:
+          type: string
+          enum:
+            [
+              UNAUTHENTICATED,
+              FORBIDDEN,
+              INVALID_REQUEST,
+              CONFLICT,
+              NOT_FOUND,
+              OFFER_EXPIRED,
+              RATE_LIMITED,
+              UNAVAILABLE,
+            ]
+        retryAfterSeconds: { type: integer, minimum: 1, maximum: 60 }
   securitySchemes:
     sameOrigin:
       type: apiKey

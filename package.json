@@ -24,15 +24,20 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",
-    "test": "pnpm -r --if-present test",
+    "test": "pnpm test:launcher && pnpm -r --if-present test",
+    "test:launcher": "vitest run scripts/local-data-key.test.ts",
     "test:e2e": "pnpm --filter @probyu/web test:e2e",
     "test:integration": "pnpm --filter @probyu/backend test:integration",
     "typecheck": "tsc --noEmit -p tsconfig.json && pnpm -r --if-present typecheck",
     "verify": "pnpm contract:check && pnpm format:check && pnpm lint && pnpm typecheck && pnpm test && pnpm build",
     "db:m2:prepare": "pnpm --filter @probyu/backend exec tsx src/db/family-prepare.ts",
+    "db:m3:prepare": "pnpm --filter @probyu/backend exec tsx src/db/research-prepare.ts",
     "test:m2": "pnpm --filter @probyu/backend exec vitest run src/db/family.integration.test.ts",
+    "test:m3": "pnpm --filter @probyu/backend exec vitest run src/db/research.integration.test.ts",
     "test:e2e:m2": "pnpm --filter @probyu/web exec playwright test --config playwright.m2.config.ts",
-    "dev:m2": "tsx scripts/dev-m2.ts"
+    "dev:m2": "tsx scripts/dev-m2.ts",
+    "dev:m3": "tsx scripts/dev-m3.ts",
+    "test:e2e:m3": "pnpm --filter @probyu/web exec playwright test --config playwright.m3.config.ts"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

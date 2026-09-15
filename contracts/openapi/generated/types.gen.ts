@@ -170,6 +170,119 @@ export type FamilyError = {
     retryAfterSeconds?: number;
 };
 
+export type ResearchQuestionRequest = {
+    question: string;
+    idempotencyKey: string;
+};
+
+export type ResearchIdempotentCommand = {
+    idempotencyKey: string;
+};
+
+export type ResearchOfferCommand = {
+    action: 'START' | 'DECLINE';
+    idempotencyKey: string;
+};
+
+export type ResearchChallengeCommand = {
+    action: 'NEXT' | 'PAUSE' | 'RESUME' | 'CANCEL';
+    idempotencyKey: string;
+    expectedVersion: number;
+};
+
+export type ResearchChallenge = {
+    offerId: string;
+    versionId: string;
+    version: number;
+    kind: 'MICRO_PROBE' | 'EXPERIENCE' | 'PROJECT';
+    title: string;
+    goal: string;
+    durationMinutes: number;
+    materials: Array<string>;
+    steps: Array<string>;
+    ageBands: Array<'8_10' | '11_12' | '13_14'>;
+    riskClass: 'MINIMAL_RISK';
+    supervisionRequirement: 'NONE';
+    contentHash: string;
+    expiresAt: string;
+};
+
+export type ApprovedResearchAnswer = {
+    explanation: Array<string>;
+    roleNotice: 'Это учебный ответ системы: он может ошибаться.';
+    challenge: ResearchChallenge;
+};
+
+export type ResearchChallengeSummary = {
+    versionId: string;
+    version: number;
+    kind: 'MICRO_PROBE' | 'EXPERIENCE' | 'PROJECT';
+    title: string;
+    goal: string;
+    durationMinutes: number;
+    ageBands: Array<'8_10' | '11_12' | '13_14'>;
+    riskClass: 'MINIMAL_RISK';
+    supervisionRequirement: 'NONE';
+    contentHash: string;
+};
+
+export type ResearchAnswerRun = {
+    id: string;
+    status: 'RECEIVED' | 'INPUT_APPROVED' | 'QUEUED' | 'GENERATING' | 'OUTPUT_VALIDATING' | 'APPROVED' | 'DELIVERING' | 'COMPLETED' | 'DENIED' | 'FAILED_SAFE' | 'CANCELLED';
+    createdAt: string;
+    updatedAt: string;
+    failureCode?: 'INPUT_BLOCKED' | 'INPUT_TOO_LONG' | 'INPUT_LOST' | 'OUTPUT_REJECTED' | 'GATE_TIMEOUT' | 'PROVIDER_OUTCOME_UNKNOWN' | 'ACCESS_REVOKED' | 'KILLED' | 'CANCELLED';
+    answer?: ApprovedResearchAnswer;
+    challengeRun?: ResearchChallengeRun;
+};
+
+export type ResearchCurrentAnswer = {
+    answer?: ResearchAnswerRun;
+};
+
+export type ResearchActiveChallengeRun = {
+    id: string;
+    offerId: string;
+    answerRunId: string;
+    status: 'IN_PROGRESS';
+    expiresAt: string;
+    rowVersion: number;
+    currentStep: number;
+    totalSteps: number;
+    paused: boolean;
+    instructionsComplete: boolean;
+    step?: string;
+    challenge: ResearchChallengeSummary;
+};
+
+export type ResearchTerminalChallengeRun = {
+    id: string;
+    offerId: string;
+    answerRunId: string;
+    status: 'DECLINED' | 'ABANDONED' | 'EXPIRED' | 'BLOCKED_BY_POLICY';
+    expiresAt: string;
+    rowVersion: number;
+    currentStep: number;
+    totalSteps: number;
+    paused: boolean;
+    instructionsComplete: boolean;
+};
+
+export type ResearchChallengeRun = ResearchActiveChallengeRun | ResearchTerminalChallengeRun;
+
+export type ResearchError = {
+    code: 'UNAUTHENTICATED' | 'FORBIDDEN' | 'INVALID_REQUEST' | 'CONFLICT' | 'NOT_FOUND' | 'OFFER_EXPIRED' | 'RATE_LIMITED' | 'UNAVAILABLE';
+    retryAfterSeconds?: number;
+};
+
+export type CsrfToken = string;
+
+export type AnswerRunId = string;
+
+export type OfferId = string;
+
+export type ChallengeRunId = string;
+
 export type GetHealthData = {
     body?: never;
     path?: never;
@@ -658,3 +771,333 @@ export type LogoutFamilyResponses = {
 };
 
 export type LogoutFamilyResponse = LogoutFamilyResponses[keyof LogoutFamilyResponses];
+
+export type CreateResearchQuestionData = {
+    body: ResearchQuestionRequest;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path?: never;
+    query?: never;
+    url: '/v1/research/questions';
+};
+
+export type CreateResearchQuestionErrors = {
+    /**
+     * Safe research failure without child content
+     */
+    400: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    401: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    403: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    409: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    429: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    503: ResearchError;
+};
+
+export type CreateResearchQuestionError = CreateResearchQuestionErrors[keyof CreateResearchQuestionErrors];
+
+export type CreateResearchQuestionResponses = {
+    /**
+     * Existing idempotent run or a new terminal safe input rejection
+     */
+    200: ResearchAnswerRun;
+    /**
+     * Sanitized input and one logical run were durably accepted
+     */
+    202: ResearchAnswerRun;
+};
+
+export type CreateResearchQuestionResponse = CreateResearchQuestionResponses[keyof CreateResearchQuestionResponses];
+
+export type GetCurrentResearchAnswerData = {
+    body?: never;
+    path?: never;
+    query?: never;
+    url: '/v1/research/answers/current';
+};
+
+export type GetCurrentResearchAnswerErrors = {
+    /**
+     * Safe research failure without child content
+     */
+    401: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    403: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    503: ResearchError;
+};
+
+export type GetCurrentResearchAnswerError = GetCurrentResearchAnswerErrors[keyof GetCurrentResearchAnswerErrors];
+
+export type GetCurrentResearchAnswerResponses = {
+    /**
+     * Current resumable run, or an empty object when no run is resumable
+     */
+    200: ResearchCurrentAnswer;
+};
+
+export type GetCurrentResearchAnswerResponse = GetCurrentResearchAnswerResponses[keyof GetCurrentResearchAnswerResponses];
+
+export type GetResearchAnswerData = {
+    body?: never;
+    path: {
+        answerRunId: string;
+    };
+    query?: never;
+    url: '/v1/research/answers/{answerRunId}';
+};
+
+export type GetResearchAnswerErrors = {
+    /**
+     * Safe research failure without child content
+     */
+    400: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    401: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    403: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    404: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    503: ResearchError;
+};
+
+export type GetResearchAnswerError = GetResearchAnswerErrors[keyof GetResearchAnswerErrors];
+
+export type GetResearchAnswerResponses = {
+    /**
+     * Current run snapshot; approved content appears only after all gates
+     */
+    200: ResearchAnswerRun;
+};
+
+export type GetResearchAnswerResponse = GetResearchAnswerResponses[keyof GetResearchAnswerResponses];
+
+export type StreamResearchAnswerData = {
+    body?: never;
+    headers?: {
+        'Last-Event-ID'?: string;
+    };
+    path: {
+        answerRunId: string;
+    };
+    query?: {
+        cursor?: number;
+    };
+    url: '/v1/research/answers/{answerRunId}/events';
+};
+
+export type StreamResearchAnswerErrors = {
+    /**
+     * Safe research failure without child content
+     */
+    400: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    401: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    403: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    404: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    503: ResearchError;
+};
+
+export type StreamResearchAnswerError = StreamResearchAnswerErrors[keyof StreamResearchAnswerErrors];
+
+export type StreamResearchAnswerResponses = {
+    /**
+     * SSE event stream; each data value is a ResearchAnswerRun JSON snapshot
+     */
+    200: string;
+};
+
+export type StreamResearchAnswerResponse = StreamResearchAnswerResponses[keyof StreamResearchAnswerResponses];
+
+export type CancelResearchAnswerData = {
+    body: ResearchIdempotentCommand;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path: {
+        answerRunId: string;
+    };
+    query?: never;
+    url: '/v1/research/answers/{answerRunId}/cancel';
+};
+
+export type CancelResearchAnswerErrors = {
+    /**
+     * Safe research failure without child content
+     */
+    400: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    401: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    403: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    404: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    409: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    503: ResearchError;
+};
+
+export type CancelResearchAnswerError = CancelResearchAnswerErrors[keyof CancelResearchAnswerErrors];
+
+export type CancelResearchAnswerResponses = {
+    /**
+     * Current terminal or cancelled snapshot
+     */
+    200: ResearchAnswerRun;
+};
+
+export type CancelResearchAnswerResponse = CancelResearchAnswerResponses[keyof CancelResearchAnswerResponses];
+
+export type ExecuteResearchOfferCommandData = {
+    body: ResearchOfferCommand;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path: {
+        offerId: string;
+    };
+    query?: never;
+    url: '/v1/research/offers/{offerId}/commands';
+};
+
+export type ExecuteResearchOfferCommandErrors = {
+    /**
+     * Safe research failure without child content
+     */
+    400: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    401: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    403: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    404: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    409: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    410: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    503: ResearchError;
+};
+
+export type ExecuteResearchOfferCommandError = ExecuteResearchOfferCommandErrors[keyof ExecuteResearchOfferCommandErrors];
+
+export type ExecuteResearchOfferCommandResponses = {
+    /**
+     * Current challenge run
+     */
+    200: ResearchChallengeRun;
+};
+
+export type ExecuteResearchOfferCommandResponse = ExecuteResearchOfferCommandResponses[keyof ExecuteResearchOfferCommandResponses];
+
+export type ExecuteResearchChallengeCommandData = {
+    body: ResearchChallengeCommand;
+    headers: {
+        'X-CSRF-Token': string;
+    };
+    path: {
+        challengeRunId: string;
+    };
+    query?: never;
+    url: '/v1/research/challenges/{challengeRunId}/commands';
+};
+
+export type ExecuteResearchChallengeCommandErrors = {
+    /**
+     * Safe research failure without child content
+     */
+    400: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    401: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    403: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    404: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    409: ResearchError;
+    /**
+     * Safe research failure without child content
+     */
+    503: ResearchError;
+};
+
+export type ExecuteResearchChallengeCommandError = ExecuteResearchChallengeCommandErrors[keyof ExecuteResearchChallengeCommandErrors];
+
+export type ExecuteResearchChallengeCommandResponses = {
+    /**
+     * Current challenge run
+     */
+    200: ResearchChallengeRun;
+};
+
+export type ExecuteResearchChallengeCommandResponse = ExecuteResearchChallengeCommandResponses[keyof ExecuteResearchChallengeCommandResponses];

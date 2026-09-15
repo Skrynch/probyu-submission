@@ -1,0 +1,234 @@
+.research-shell {
+  min-height: 100dvh;
+  color: var(--foreground);
+  background:
+    radial-gradient(
+      circle at 8% 0%,
+      color-mix(in srgb, var(--primary) 10%, transparent),
+      transparent 28rem
+    ),
+    var(--background);
+}
+
+.research-header,
+.research-footer {
+  display: flex;
+  width: min(100%, 72rem);
+  margin: auto;
+  padding: 1.25rem clamp(1rem, 4vw, 3rem);
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.research-header {
+  border-bottom: 1px solid var(--border);
+}
+
+.research-header > span,
+.research-eyebrow,
+.research-footer,
+.research-role,
+.research-limit,
+.research-count {
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+.research-main {
+  width: min(100%, 48rem);
+  min-height: calc(100dvh - 10rem);
+  margin: auto;
+  padding: 2rem clamp(1rem, 4vw, 2rem) 4rem;
+}
+
+.research-main h1 {
+  max-width: 42rem;
+  margin: 1rem 0;
+  font-size: clamp(2rem, 7vw, 3.5rem);
+  font-weight: 680;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+
+.research-main h2 {
+  margin: 0.8rem 0;
+  font-size: clamp(1.35rem, 4vw, 1.8rem);
+  line-height: 1.2;
+}
+
+.research-main h3 {
+  margin: 1.4rem 0 0.5rem;
+  font-size: 1rem;
+}
+
+.research-main p,
+.research-main li {
+  line-height: 1.65;
+}
+
+.research-notice,
+.research-error {
+  padding: 0.9rem 1rem;
+  border-left: 3px solid var(--primary);
+  background: color-mix(in srgb, var(--muted) 70%, transparent);
+}
+
+.research-error {
+  border-left-color: var(--destructive);
+}
+
+.research-lead {
+  max-width: 38rem;
+  font-size: 1.15rem;
+}
+
+.research-main form {
+  display: grid;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.research-main textarea {
+  min-height: 9rem;
+  resize: vertical;
+  padding: 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  color: var(--foreground);
+  background: var(--background);
+  font: inherit;
+  font-size: 1.1rem;
+  line-height: 1.55;
+}
+
+.research-count {
+  justify-self: end;
+}
+
+.research-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+.research-suggestions button {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  color: var(--foreground);
+  background: var(--background);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.research-suggestions button:hover {
+  border-color: var(--primary);
+}
+
+.research-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.research-answer,
+.research-card,
+.research-complete {
+  margin-top: 1.5rem;
+  padding: clamp(1.1rem, 4vw, 1.6rem);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--background);
+  box-shadow: 0 1rem 3rem color-mix(in srgb, var(--foreground) 6%, transparent);
+}
+
+.research-card {
+  border-top: 4px solid var(--primary);
+}
+
+.research-card__topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.research-card ul,
+.research-card ol {
+  padding-left: 1.4rem;
+}
+
+.research-step {
+  display: grid;
+  grid-template-columns: 3.2rem 1fr;
+  gap: 1rem;
+  align-items: start;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background: var(--background);
+}
+
+.research-step > span {
+  display: grid;
+  width: 3rem;
+  height: 3rem;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.research-step p {
+  margin: 0.35rem 0;
+  font-size: 1.15rem;
+}
+
+.research-footer {
+  align-items: flex-start;
+  border-top: 1px solid var(--border);
+}
+
+.research-footer span {
+  text-align: right;
+}
+
+@media (max-width: 34rem) {
+  .research-header > span {
+    max-width: 9rem;
+    text-align: right;
+  }
+
+  .research-actions,
+  .research-footer {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .research-actions > *,
+  .research-actions [data-slot='button'] {
+    width: 100%;
+  }
+
+  .research-footer span {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .research-suggestions button {
+    transition: none;
+  }
+}

@@ -3,7 +3,7 @@ import { Pool, type PoolClient, type QueryResultRow } from 'pg';
 import type { FamilyAction, FamilyChild, FamilySession } from '@probyu/contracts/types';
 import { AccessError, actionHash, DOCUMENT, equalDigest, keyed, POLICY, secret } from './policy.js';
 
-type Session = QueryResultRow & {
+export type Session = QueryResultRow & {
   id: string;
   digest: string;
   family_id: string | null;
@@ -41,7 +41,7 @@ type Reauth = {
   policy_version: string;
   privilege_epoch: number;
 };
-type Context = { client: PoolClient; session: Session; now: Date };
+export type Context = { client: PoolClient; session: Session; now: Date };
 export type FamilyConfig = {
   mode: 'synthetic';
   environment: 'development' | 'test';

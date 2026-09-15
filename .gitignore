@@ -8,6 +8,7 @@
 .pypirc
 secrets/
 credentials/
+.local/
 *.secret
 *.pem
 *.key

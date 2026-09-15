@@ -16,6 +16,8 @@ export class AccessError extends Error {
       | 'FORBIDDEN'
       | 'INVALID_REQUEST'
       | 'CONFLICT'
+      | 'NOT_FOUND'
+      | 'OFFER_EXPIRED'
       | 'EXPIRED_PROOF'
       | 'INVALID_CODE'
       | 'RATE_LIMITED'

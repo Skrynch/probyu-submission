@@ -12,12 +12,15 @@ import {
   type DemoRepository,
 } from './modules/demo/repository.js';
 import { responseSchemas } from './modules/demo/contract-schemas.js';
+import { registerResearchRoutes } from './modules/research/routes.js';
+import { ResearchService, type ResearchConfig } from './modules/research/service.js';
 
 export type BuildAppOptions = {
   databaseUrl?: string;
   family?: FamilyConfig;
   repository?: DemoRepository;
   logger?: boolean;
+  research?: ResearchConfig;
 };
 
 export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyInstance> {
@@ -42,6 +45,10 @@ export async function buildApp(options: BuildAppOptions = {}): Promise<FastifyIn
       await family.pool.end();
     });
     registerFamilyRoutes(app, family);
+    if (options.research)
+      registerResearchRoutes(app, new ResearchService(family, options.research));
+  } else if (options.research) {
+    throw new Error('Research requires family access.');
   }
   await app.register(helmet, {
     frameguard: { action: 'deny' },

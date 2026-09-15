@@ -6,6 +6,7 @@ const app = await buildApp({
   ...(config.databaseUrl === undefined ? {} : { databaseUrl: config.databaseUrl }),
   logger: true,
   ...(config.family ? { family: config.family } : {}),
+  ...(config.research ? { research: config.research } : {}),
 });
 
 const stop = async () => {
